@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+/* Habilitar dark mode por clase en Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Variables de color por tema */
+:root, html.dark {
+  color-scheme: dark;
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #0d0d0d;
+  --bg-card: #111111;
+  --text-primary: #ffffff;
+  --text-muted: rgba(255,255,255,0.5);
+  --border-color: rgba(255,255,255,0.1);
+}
+
+html.light {
+  color-scheme: light;
+  --bg-primary: #f9fafb;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #111827;
+  --text-muted: rgba(0,0,0,0.5);
+  --border-color: rgba(0,0,0,0.1);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── LIGHT MODE OVERRIDES ─────────────────────────────────────────────────── */
+
+/* Fondos dark hardcodeados → blanco/claro */
+html.light [class*="bg-[#0"] {
+  background-color: #ffffff !important;
+}
+html.light [class*="bg-[#1"] {
+  background-color: #f3f4f6 !important;
+}
+
+/* Gradients con colores dark como origen/destino */
+html.light [class*="from-[#0"],
+html.light [class*="from-[#1"],
+html.light [class*="to-[#0"],
+html.light [class*="to-[#1"] {
+  --tw-gradient-from: #f9fafb !important;
+  --tw-gradient-to: #f3f4f6 !important;
+}
+
+/* Bordes */
+html.light [class*="border-white"] {
+  border-color: rgba(0,0,0,0.1) !important;
+}
+
+/* Textos blancos → oscuros, EXCEPTO en elementos con fondo de color o en bloques que fuerzan blanco */
+html.light [class*="text-white"]:not([class*="bg-orange"]):not([class*="bg-green"]):not([class*="bg-blue"]):not([class*="bg-purple"]):not([class*="bg-red"]):not([class*="bg-gradient"]):not([class*="bg-[#"]):not(.nutrition-info):not(.nutrition-info *):not(.routine-info):not(.routine-info *) {
+  color: #111827 !important;
+}
+/* Texto en items activos del nav (fondo orange) debe seguir blanco */
+html.light .bg-orange-600 [class*="text-white"],
+html.light .bg-orange-600[class*="text-white"] {
+  color: #ffffff !important;
+}
+/* Botones/badges con fondo de color → texto blanco */
+html.light [class*="bg-orange"] [class*="text-white"],
+html.light [class*="bg-green"] [class*="text-white"],
+html.light [class*="bg-blue"] [class*="text-white"],
+html.light [class*="bg-purple"] [class*="text-white"],
+html.light [class*="bg-red"] [class*="text-white"] {
+  color: #ffffff !important;
+}
+
+/* Fondos semitransparentes white/X → negro/X */
+html.light [class*="bg-white/"] {
+  background-color: rgba(0,0,0,0.05) !important;
+}
+html.light [class*="hover:bg-white/"]:hover {
+  background-color: rgba(0,0,0,0.08) !important;
+}
+
+/* Recharts tooltips (inline styles — override via clase contenedor) */
+html.light .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #111827 !important;
+}
+html.light .recharts-tooltip-item,
+html.light .recharts-tooltip-label {
+  color: #374151 !important;
+}
+html.light .recharts-cartesian-grid-horizontal line,
+html.light .recharts-cartesian-grid-vertical line {
+  stroke: rgba(0,0,0,0.06) !important;
+}
+html.light .recharts-tooltip-cursor {
+  fill: rgba(0,0,0,0.04) !important;
+}
+html.light .recharts-text,
+html.light .recharts-cartesian-axis-tick-value {
+  fill: #6b7280 !important;
+}
+
+/* Inputs, textareas y selects → texto oscuro + placeholder legible */
+html.light input,
+html.light textarea,
+html.light select {
+  color: #111827 !important;
+}
+html.light select option {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: rgba(0,0,0,0.3) !important;
+}
+
+/* Botones con fondo sólido de color → texto blanco */
+html.light .bg-orange-600,
+html.light .bg-orange-700,
+html.light .bg-green-600,
+html.light .bg-green-700,
+html.light .bg-purple-600,
+html.light .bg-purple-700,
+html.light .bg-blue-600,
+html.light .bg-blue-700,
+html.light .bg-red-600,
+html.light .bg-red-700 {
+  color: #ffffff !important;
+}
+
+/* Botón cerrar sesión → texto oscuro en light mode */
+html.light [class*="hover:text-red-500"][class*="text-white"] {
+  color: #374151 !important;
+}
+
+/* Headings semánticos → siempre oscuros en light mode */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4 {
+  color: #111827 !important;
+}
+/* Títulos de sección con text-2xl/3xl/4xl sin color explícito */
+html.light [class*="text-2xl"],
+html.light [class*="text-3xl"],
+html.light [class*="text-4xl"] {
+  color: #111827 !important;
+}
+/* Excepciones: elementos con fondo sólido de color mantienen texto blanco */
+html.light .bg-orange-600 *,
+html.light .bg-orange-700 *,
+html.light .bg-purple-600 *,
+html.light .bg-purple-700 *,
+html.light .bg-green-600 *,
+html.light .bg-green-700 *,
+html.light .bg-blue-600 *,
+html.light .bg-blue-700 *,
+html.light .bg-red-600 *,
+html.light .bg-red-700 *,
+html.light .bg-orange-600,
+html.light .bg-orange-700 {
+  color: #ffffff !important;
+}
+
+/* Scrollbar */
+html.light ::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.25);
+}
+
+/* ─── BASE STYLES ──────────────────────────────────────────────────────────── */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Recharts */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255,255,255,0.05);
+}
+.recharts-tooltip-cursor {
+  fill: rgba(255,255,255,0.05);
+}
+
+/* Prevenir que extensiones inyecten elementos que rompan React */
+body > div[class*="grammarly"],
+body > div[class*="lt-"],
+body > div[class*="translate-"],
+body > div[style*="position: fixed"][style*="z-index: 9999"] {
+  display: none !important;
+}
+
+/* Asegurar que las animaciones no causen overflow issues */
+* {
+  animation-fill-mode: both !important;
+}

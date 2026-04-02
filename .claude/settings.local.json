@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc -l /c/Users/SneiderCM/Desktop/life-os/src/components/*.tsx /c/Users/SneiderCM/Desktop/life-os/src/*.tsx)",
+      "Bash(cmd.exe /c \"where psql 2>nul || echo not found\")",
+      "Bash(cmd.exe /c \"dir /s /b \\\\\"C:\\\\\\\\Program Files\\\\\\\\psql.exe\\\\\" 2>nul & dir /s /b \\\\\"C:\\\\\\\\Program Files \\(x86\\)\\\\\\\\psql.exe\\\\\" 2>nul & echo done\")",
+      "Bash(cmd.exe /c \"dir \\\\\"C:\\\\\\\\Program Files\\\\\\\\PostgreSQL\\\\\" 2>nul & dir \\\\\"C:\\\\\\\\\\\\\" 2>nul | findstr /i post\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem 'C:\\\\Program Files' -Filter 'psql.exe' -Recurse -ErrorAction SilentlyContinue | Select-Object FullName; Get-ChildItem 'C:\\\\Program Files\\\\PostgreSQL' -ErrorAction SilentlyContinue\")",
+      "Bash(powershell -Command \"Test-Path 'C:\\\\Program Files\\\\PostgreSQL'\")",
+      "Bash(powershell -Command \"Get-ChildItem 'C:\\\\' | Select-Object Name\")",
+      "Bash(powershell -Command \"Get-ChildItem 'C:\\\\Program Files' | Select-Object Name\")",
+      "Bash(cmd.exe /c \"sc query type= all state= all 2>nul | findstr /i postgres\")",
+      "Bash(wc -l \"C:\\\\Users\\\\SneiderCM\\\\Desktop\\\\life-os/src/components/\"*.tsx \"C:\\\\Users\\\\SneiderCM\\\\Desktop\\\\life-os/server/routes/\"*.ts \"C:\\\\Users\\\\SneiderCM\\\\Desktop\\\\life-os/src/\"*.ts \"C:\\\\Users\\\\SneiderCM\\\\Desktop\\\\life-os/src/\"*.tsx)",
+      "Bash(ls \"C:\\\\Users\\\\SneiderCM\\\\Desktop\\\\life-os\\\\src\\\\hooks\\\\useTheme\"*)",
+      "Bash(ls \"C:\\\\Users\\\\SneiderCM\\\\Desktop\\\\life-os\\\\src\\\\components\\\\OnboardingWizard\"*)",
+      "Bash(ls \"C:\\\\Users\\\\SneiderCM\\\\Desktop\\\\life-os\\\\src\\\\components\\\\ThemeToggle\"*)"
+    ]
+  }
+}

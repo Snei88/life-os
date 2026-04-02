@@ -1,0 +1,168 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and settings",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "gymTargetKcal": { "type": "number", "description": "Target calories for gym days" },
+        "restTargetKcal": { "type": "number", "description": "Target calories for rest days" },
+        "proteinTarget": { "type": "number", "description": "Target protein in grams" },
+        "savingsGoal": { "type": "number", "description": "Target savings percentage" },
+        "emergencyFundGoal": { "type": "number", "description": "Target emergency fund amount" },
+        "mainGoal": { "type": "string", "description": "The main goal for Brian Tracy 21 days" }
+      },
+      "required": ["email", "name"]
+    },
+    "Habit": {
+      "title": "Habit",
+      "description": "A habit to track",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "icon": { "type": "string" },
+        "color": { "type": "string" },
+        "targetDays": { "type": "array", "items": { "type": "number" }, "description": "0-6 for Sun-Sat" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name"]
+    },
+    "HabitLog": {
+      "title": "HabitLog",
+      "description": "A log of a habit completion",
+      "type": "object",
+      "properties": {
+        "habitId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "completed": { "type": "boolean" }
+      },
+      "required": ["habitId", "date", "completed"]
+    },
+    "Meal": {
+      "title": "Meal",
+      "description": "A meal log",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "name": { "type": "string" },
+        "calories": { "type": "number" },
+        "protein": { "type": "number" },
+        "carbs": { "type": "number" },
+        "fat": { "type": "number" },
+        "mealType": { "type": "string", "enum": ["breakfast", "lunch", "dinner", "snack"] }
+      },
+      "required": ["userId", "date", "name", "calories", "protein"]
+    },
+    "WorkoutSession": {
+      "title": "WorkoutSession",
+      "description": "A gym or workout session",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "type": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["userId", "date", "type"]
+    },
+    "Exercise": {
+      "title": "Exercise",
+      "description": "An exercise in a workout session",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "name": { "type": "string" },
+        "sets": { "type": "array", "items": { "type": "object", "properties": { "reps": { "type": "number" }, "weight": { "type": "number" }, "done": { "type": "boolean" } } } }
+      },
+      "required": ["sessionId", "name"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A financial transaction",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "description": { "type": "string" }
+      },
+      "required": ["userId", "date", "type", "category", "amount"]
+    },
+    "Goal": {
+      "title": "Goal",
+      "description": "A long-term goal",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "deadline": { "type": "string", "format": "date" },
+        "progress": { "type": "number" },
+        "level": { "type": "string", "enum": ["90d", "6m", "2y"] }
+      },
+      "required": ["userId", "title", "deadline", "level"]
+    },
+    "JournalEntry": {
+      "title": "JournalEntry",
+      "description": "A daily journal entry",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "affirmation": { "type": "string" },
+        "journalText": { "type": "string" },
+        "gratitude": { "type": "array", "items": { "type": "string" } },
+        "reflection": { "type": "string" }
+      },
+      "required": ["userId", "date"]
+    },
+    "BrianTracyLog": {
+      "title": "BrianTracyLog",
+      "description": "A log for Brian Tracy 10x goal",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "goal": { "type": "string" },
+        "completed": { "type": "boolean" }
+      },
+      "required": ["userId", "date", "goal", "completed"]
+    },
+    "ScheduleEvent": {
+      "title": "ScheduleEvent",
+      "description": "A recurring or fixed event",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "dayOfWeek": { "type": "number" },
+        "time": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string" },
+        "color": { "type": "string" },
+        "isFixed": { "type": "boolean" }
+      },
+      "required": ["userId", "dayOfWeek", "time", "title"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": { "schema": "User", "description": "User profiles" },
+    "/habits/{habitId}": { "schema": "Habit", "description": "User habits" },
+    "/habitLogs/{logId}": { "schema": "HabitLog", "description": "Habit completion logs" },
+    "/meals/{mealId}": { "schema": "Meal", "description": "Nutrition logs" },
+    "/workoutSessions/{sessionId}": { "schema": "WorkoutSession", "description": "Workout sessions" },
+    "/exercises/{exerciseId}": { "schema": "Exercise", "description": "Exercises in sessions" },
+    "/transactions/{transactionId}": { "schema": "Transaction", "description": "Financial transactions" },
+    "/goals/{goalId}": { "schema": "Goal", "description": "User goals" },
+    "/journalEntries/{entryId}": { "schema": "JournalEntry", "description": "Daily journal entries" },
+    "/brianTracyLogs/{logId}": { "schema": "BrianTracyLog", "description": "Brian Tracy goal logs" },
+    "/scheduleEvents/{eventId}": { "schema": "ScheduleEvent", "description": "Weekly schedule events" }
+  }
+}
