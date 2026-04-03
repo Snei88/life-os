@@ -297,7 +297,7 @@ const Gym: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Entrenamiento</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Entrenamiento</h1>
           <p className={cn("mt-1", isLight ? "text-gray-600" : "text-white/60")}>
             Supera tus límites físicos.
           </p>
@@ -313,7 +313,7 @@ const Gym: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {[
           { label: "Racha Actual", icon: Flame, color: "text-orange-500", value: stats?.currentStreak || 0, unit: "días" },
           { label: "Récord", icon: Trophy, color: "text-yellow-500", value: stats?.longestStreak || 0, unit: "días" },
@@ -321,16 +321,16 @@ const Gym: React.FC = () => {
           { label: "Total Sesiones", icon: Dumbbell, color: "text-blue-500", value: stats?.totalWorkouts || 0, unit: "" },
         ].map((stat, i) => (
           <div key={i} className={cn(
-            "border p-6 rounded-3xl transition-colors",
+            "border p-4 sm:p-6 rounded-3xl transition-colors",
             isLight ? "bg-white border-gray-200 shadow-sm" : "bg-[#0d0d0d] border-white/10"
           )}>
-            <p className={cn("text-xs font-bold uppercase tracking-widest mb-1", isLight ? "text-gray-500" : "text-white/40")}>
+            <p className={cn("text-xs font-bold uppercase tracking-widest mb-1 truncate", isLight ? "text-gray-500" : "text-white/40")}>
               {stat.label}
             </p>
-            <div className="flex items-center gap-2">
-              <stat.icon className={stat.color} size={24} />
-              <p className="text-3xl font-black">{stat.value}</p>
-              {stat.unit && <span className={cn("text-sm font-bold", isLight ? "text-gray-500" : "text-white/40")}>{stat.unit}</span>}
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <stat.icon className={stat.color} size={20} />
+              <p className="text-xl sm:text-3xl font-black">{stat.value}</p>
+              {stat.unit && <span className={cn("text-xs sm:text-sm font-bold", isLight ? "text-gray-500" : "text-white/40")}>{stat.unit}</span>}
             </div>
           </div>
         ))}
@@ -349,7 +349,7 @@ const Gym: React.FC = () => {
             )}
           >
             {/* Header de sesión */}
-            <div className={cn("p-6 border-b flex items-center justify-between", isLight ? "border-green-200" : "border-green-500/20")}>
+            <div className={cn("p-4 sm:p-6 border-b flex items-center justify-between gap-3", isLight ? "border-green-200" : "border-green-500/20")}>
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className={cn("inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider", isLight ? "bg-green-100 text-green-700" : "bg-green-500/20 text-green-400")}>
@@ -375,17 +375,17 @@ const Gym: React.FC = () => {
                 >
                   <X size={20} />
                 </button>
-                <button 
+                <button
                   onClick={handleFinishSession}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold transition-all shadow-lg shadow-green-600/20"
+                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold transition-all shadow-lg shadow-green-600/20 text-sm"
                 >
-                  <CheckCircle2 size={18} /> Finalizar
+                  <CheckCircle2 size={16} /> <span>Finalizar</span>
                 </button>
               </div>
             </div>
 
             {/* Lista de ejercicios */}
-            <div className="p-6 space-y-4">
+            <div className="p-4 sm:p-6 space-y-4">
               {activeSession.exercises?.map((exercise) => (
                 <div 
                   key={exercise.id}
@@ -441,24 +441,24 @@ const Gym: React.FC = () => {
                                     : (isLight ? 'bg-gray-50' : 'bg-white/5')
                                 )}
                               >
-                                <span className={cn("text-sm font-bold w-12", isLight ? "text-gray-500" : "text-white/40")}>
-                                  Serie {idx + 1}
+                                <span className={cn("text-xs sm:text-sm font-bold w-10 sm:w-12 shrink-0", isLight ? "text-gray-500" : "text-white/40")}>
+                                  S{idx + 1}
                                 </span>
-                                
-                                <div className="flex items-center gap-2 flex-1">
+
+                                <div className="flex items-center gap-1.5 sm:gap-2 flex-1 flex-wrap">
                                   <input
                                     type="number"
                                     value={set.reps}
                                     onChange={(e) => handleSetUpdate(exercise, idx, 'reps', parseInt(e.target.value) || 0)}
-                                    className={cn("w-16 border rounded-lg px-2 py-1 text-center text-sm", isLight ? "bg-white border-gray-200" : "bg-black/50 border-white/10")}
+                                    className={cn("w-14 sm:w-16 border rounded-lg px-2 py-1 text-center text-sm", isLight ? "bg-white border-gray-200" : "bg-black/50 border-white/10")}
                                     placeholder="Reps"
                                   />
-                                  <span className={isLight ? "text-gray-400" : "text-white/40"}>×</span>
+                                  <span className={cn("text-xs", isLight ? "text-gray-400" : "text-white/40")}>×</span>
                                   <input
                                     type="number"
                                     value={set.weight}
                                     onChange={(e) => handleSetUpdate(exercise, idx, 'weight', parseFloat(e.target.value) || 0)}
-                                    className={cn("w-20 border rounded-lg px-2 py-1 text-center text-sm", isLight ? "bg-white border-gray-200" : "bg-black/50 border-white/10")}
+                                    className={cn("w-16 sm:w-20 border rounded-lg px-2 py-1 text-center text-sm", isLight ? "bg-white border-gray-200" : "bg-black/50 border-white/10")}
                                     placeholder="Peso"
                                   />
                                   <span className={cn("text-xs", isLight ? "text-gray-400" : "text-white/40")}>kg</span>
@@ -516,7 +516,7 @@ const Gym: React.FC = () => {
                 <div 
                   key={routine.id}
                   className={cn(
-                    "border p-6 rounded-3xl transition-all group relative",
+                    "border p-4 sm:p-6 rounded-3xl transition-all group relative",
                     isLight 
                       ? "bg-white border-gray-200 shadow-sm hover:shadow-md hover:border-green-300" 
                       : "bg-[#0d0d0d] border-white/10 hover:border-green-500/30"
@@ -984,7 +984,7 @@ const Gym: React.FC = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className={cn(
-                "border rounded-3xl w-full max-w-md p-8",
+                "border rounded-3xl w-full max-w-md p-5 sm:p-8 max-h-[90vh] overflow-y-auto",
                 isLight ? "bg-white border-gray-200" : "bg-[#0d0d0d] border-white/10"
               )}
             >

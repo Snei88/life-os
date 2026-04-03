@@ -133,7 +133,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, defaultDay, allEvents, o
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
         transition={{ layout: { duration: 0.35, ease: "easeInOut" } }}
-        className="bg-[#111] border border-white/10 p-8 rounded-3xl w-full max-w-md space-y-5 shrink-0 my-auto"
+        className="bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5 shrink-0 my-auto"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">{event ? "Editar actividad" : "Nueva actividad"}</h2>
@@ -554,12 +554,12 @@ const Routine: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Rutina Semanal</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Rutina Semanal</h1>
           <p className="text-white/40 text-sm mt-1">Estructura tu tiempo para maximizar el enfoque.</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="flex bg-white/5 border border-white/10 rounded-xl p-1 gap-1">
             <button
               onClick={() => setView("week")}

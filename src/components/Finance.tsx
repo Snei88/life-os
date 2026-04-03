@@ -209,7 +209,7 @@ const Finance: React.FC = () => {
       {/* Header con navegación de mes */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Finanzas</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Finanzas</h1>
           <p className="text-white/60">Gestiona tu capital y construye libertad.</p>
         </div>
         
@@ -306,7 +306,7 @@ const Finance: React.FC = () => {
       {/* Segunda fila: Tasa de ahorro y Fondo de Emergencia */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Tasa de Ahorro */}
-        <div className="bg-[#0d0d0d] border border-white/10 p-8 rounded-3xl space-y-6">
+        <div className="bg-[#0d0d0d] border border-white/10 p-5 sm:p-8 rounded-3xl space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="font-bold flex items-center gap-2 text-white">
               <PieChart size={18} className="text-orange-500" />
@@ -343,7 +343,7 @@ const Finance: React.FC = () => {
         </div>
 
         {/* Fondo de Emergencia */}
-        <div className="bg-[#0d0d0d] border border-white/10 p-8 rounded-3xl space-y-6">
+        <div className="bg-[#0d0d0d] border border-white/10 p-5 sm:p-8 rounded-3xl space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="font-bold flex items-center gap-2 text-white">
               <Target size={18} className="text-yellow-500" />
@@ -417,7 +417,7 @@ const Finance: React.FC = () => {
       </div>
 
       {/* Gráfica Historial */}
-      <div className="bg-[#0d0d0d] border border-white/10 p-8 rounded-3xl">
+      <div className="bg-[#0d0d0d] border border-white/10 p-5 sm:p-8 rounded-3xl">
         <h3 className="font-bold mb-6 flex items-center gap-2 text-white">
           <TrendingUp size={18} className="text-blue-500" />
           Historial (Últimos 6 meses)
@@ -515,42 +515,42 @@ const Finance: React.FC = () => {
                   exit={{ opacity: 0, x: 20 }}
                   className="bg-[#0d0d0d] border border-white/10 p-4 rounded-2xl flex items-center justify-between group hover:border-white/20 transition-all"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center",
+                      "w-10 h-10 shrink-0 rounded-xl flex items-center justify-center",
                       tx.type === "income" ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
                     )}>
                       {tx.type === "income" ? <ArrowUpRight size={20} /> : <ArrowDownRight size={20} />}
                     </div>
-                    <div>
-                      <h4 className="font-bold text-white">{tx.description || tx.category}</h4>
-                      <div className="flex items-center gap-2 text-xs text-white/40">
-                        <span>{new Date(tx.date).toLocaleDateString('es-CO')}</span>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-white truncate">{tx.description || tx.category}</h4>
+                      <div className="flex items-center gap-1.5 text-xs text-white/40">
+                        <span className="shrink-0">{new Date(tx.date).toLocaleDateString('es-CO')}</span>
                         <span>•</span>
-                        <span className="capitalize">{tx.category}</span>
+                        <span className="capitalize truncate">{tx.category}</span>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center gap-4">
+
+                  <div className="flex items-center gap-2 shrink-0 ml-2">
                     <p className={cn(
-                      "font-bold",
+                      "font-bold text-sm sm:text-base",
                       tx.type === "income" ? "text-green-500" : "text-red-500"
                     )}>
                       {tx.type === "income" ? "+" : "-"}{formatCurrency(tx.amount)}
                     </p>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button 
+                    <div className="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                      <button
                         onClick={() => openModal(tx)}
-                        className="p-2 text-white/40 hover:text-blue-400 transition-colors"
+                        className="p-1.5 text-white/40 hover:text-blue-400 transition-colors"
                       >
-                        <Edit2 size={16} />
+                        <Edit2 size={15} />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(tx.id)}
-                        className="p-2 text-white/40 hover:text-red-500 transition-colors"
+                        className="p-1.5 text-white/40 hover:text-red-500 transition-colors"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </div>
@@ -570,7 +570,7 @@ const Finance: React.FC = () => {
               animate={{ scale: 1, opacity: 1, y: 0, x: infoExpanded ? -30 : 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ type: 'spring', stiffness: 220, damping: 20 }}
-              className="bg-[#0d0d0d] border border-white/10 p-8 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto text-white shadow-2xl"
+              className="bg-[#0d0d0d] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto text-white shadow-2xl"
             >
               <h2 className="text-2xl font-bold mb-2 text-white">
                 {editingId ? "Editar Transacción" : "Nueva Transacción"}

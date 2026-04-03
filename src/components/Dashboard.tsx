@@ -22,6 +22,7 @@ const WEEK_DAYS = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
 const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void }> = ({ onNavigate }) => {
   const { profile } = useAuth();
   const { resolvedTheme } = useTheme();
+  const isLight = resolvedTheme === 'light';
   const tooltipStyle = resolvedTheme === 'light'
     ? { backgroundColor: '#ffffff', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', fontSize: '12px', color: '#111827' }
     : { backgroundColor: '#0d0d0d', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', fontSize: '12px' };
@@ -232,16 +233,16 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-white/60">Centro de comando de tu Life OS.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className={isLight ? "text-gray-500" : "text-white/60"}>Centro de comando de tu Life OS.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className={cn("px-4 py-2 rounded-2xl border", userLevel.bg, "border-white/10")}>
-            <span className="text-xs text-white/40 uppercase font-bold block">Nivel</span>
+          <div className={cn("px-4 py-2 rounded-2xl border", userLevel.bg, isLight ? "border-black/10" : "border-white/10")}>
+            <span className={cn("text-xs uppercase font-bold block", isLight ? "text-black/40" : "text-white/40")}>Nivel</span>
             <span className={cn("font-bold", userLevel.color)}>{userLevel.name}</span>
           </div>
-          <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
-            <span className="text-xs text-white/40 uppercase font-bold block">Hoy</span>
+          <div className={cn("px-4 py-2 rounded-2xl border", isLight ? "bg-black/5 border-black/10" : "bg-white/5 border-white/10")}>
+            <span className={cn("text-xs uppercase font-bold block", isLight ? "text-black/40" : "text-white/40")}>Hoy</span>
             <span className="font-bold">{todayObj.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric' })}</span>
           </div>
         </div>
@@ -250,10 +251,10 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
       {/* SECCIÓN 1: ESTADO DEL DÍA - KPIs Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* Hábitos */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-5 rounded-3xl space-y-3">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-4 sm:p-5 rounded-3xl space-y-3")}>
           <div className="flex items-center justify-between">
             <CheckCircle2 size={20} className="text-green-500" />
-            <span className="text-xs font-bold text-white/40">HÁBITOS</span>
+            <span className={cn("text-xs font-bold", isLight ? "text-black/40" : "text-white/40")}>HÁBITOS</span>
           </div>
           <div>
             <p className="text-2xl font-black">{completedHabitsToday}<span className="text-white/30 text-lg">/{todayHabits.length}</span></p>
@@ -268,10 +269,10 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
         </motion.div>
 
         {/* Calorías */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-5 rounded-3xl space-y-3">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-4 sm:p-5 rounded-3xl space-y-3")}>
           <div className="flex items-center justify-between">
             <Utensils size={20} className="text-orange-500" />
-            <span className="text-xs font-bold text-white/40">CALORÍAS</span>
+            <span className={cn("text-xs font-bold", isLight ? "text-black/40" : "text-white/40")}>CALORÍAS</span>
           </div>
           <div>
             <p className="text-2xl font-black">{totalCalories}<span className="text-white/30 text-sm">kcal</span></p>
@@ -286,10 +287,10 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
         </motion.div>
 
         {/* Proteína */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-5 rounded-3xl space-y-3">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-4 sm:p-5 rounded-3xl space-y-3")}>
           <div className="flex items-center justify-between">
             <Activity size={20} className="text-blue-500" />
-            <span className="text-xs font-bold text-white/40">PROTEÍNA</span>
+            <span className={cn("text-xs font-bold", isLight ? "text-black/40" : "text-white/40")}>PROTEÍNA</span>
           </div>
           <div>
             <p className="text-2xl font-black">{Math.round(totalProtein)}<span className="text-white/30 text-sm">g</span></p>
@@ -298,13 +299,13 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
         </motion.div>
 
         {/* Gym */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-5 rounded-3xl space-y-3">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-4 sm:p-5 rounded-3xl space-y-3")}>
           <div className="flex items-center justify-between">
             <Dumbbell size={20} className={cn(
               workoutStatus === 'completed' ? "text-green-500" : 
               workoutStatus === 'active' ? "text-yellow-500" : "text-white/20"
             )} />
-            <span className="text-xs font-bold text-white/40">GYM</span>
+            <span className={cn("text-xs font-bold", isLight ? "text-black/40" : "text-white/40")}>GYM</span>
           </div>
           <div>
             <p className="text-lg font-bold">
@@ -319,10 +320,10 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
         </motion.div>
 
         {/* Mindset */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-5 rounded-3xl space-y-3">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-4 sm:p-5 rounded-3xl space-y-3")}>
           <div className="flex items-center justify-between">
             <Brain size={20} className={mindsetCompleted ? "text-purple-500" : "text-white/20"} />
-            <span className="text-xs font-bold text-white/40">MINDSET</span>
+            <span className={cn("text-xs font-bold", isLight ? "text-black/40" : "text-white/40")}>MINDSET</span>
           </div>
           <div>
             <p className="text-lg font-bold">{mindsetCompleted ? "Completado" : "Pendiente"}</p>
@@ -333,10 +334,10 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
         </motion.div>
 
         {/* Próxima Actividad */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-5 rounded-3xl space-y-3">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-4 sm:p-5 rounded-3xl space-y-3")}>
           <div className="flex items-center justify-between">
             <Clock size={20} className={nextEvent ? "text-blue-400" : "text-white/20"} />
-            <span className="text-xs font-bold text-white/40">AGENDA</span>
+            <span className={cn("text-xs font-bold", isLight ? "text-black/40" : "text-white/40")}>AGENDA</span>
           </div>
           <div>
             {nextEvent ? (
@@ -355,7 +356,7 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Consistencia de Hábitos (Heatmap visual) */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-6 rounded-3xl">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-5 sm:p-6 rounded-3xl")}>
           <h3 className="font-bold mb-4 flex items-center gap-2">
             <CheckCircle2 size={18} className="text-green-500" />
             Consistencia Hábitos (7 días)
@@ -383,14 +384,14 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
         </motion.div>
 
         {/* Nutrición Semanal */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-6 rounded-3xl">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-5 sm:p-6 rounded-3xl")}>
           <h3 className="font-bold mb-4 flex items-center gap-2">
             <Utensils size={18} className="text-orange-500" />
             Nutrición Semanal
           </h3>
           <ResponsiveContainer width="100%" height={150}>
             <BarChart data={weeklyNutritionData}>
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.3)', fontSize: 11}} />
+              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)', fontSize: 11}} />
               <Tooltip 
                 contentStyle={tooltipStyle}
                 formatter={(value: number) => [`${value} kcal`, 'Calorías']}
@@ -405,7 +406,7 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
         </motion.div>
 
         {/* Volumen Gym */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-6 rounded-3xl">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-5 sm:p-6 rounded-3xl")}>
           <h3 className="font-bold mb-4 flex items-center gap-2">
             <Dumbbell size={18} className="text-blue-500" />
             Volumen de Entrenamiento (kg)
@@ -418,7 +419,7 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.3)', fontSize: 11}} />
+              <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)', fontSize: 11}} />
               <Tooltip 
                 contentStyle={tooltipStyle}
                 formatter={(value: number) => [`${value} kg`, 'Volumen']}
@@ -429,7 +430,7 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
         </motion.div>
 
         {/* Finanzas Mensual */}
-        <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-6 rounded-3xl">
+        <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-5 sm:p-6 rounded-3xl")}>
           <h3 className="font-bold mb-4 flex items-center gap-2">
             <Wallet size={18} className="text-emerald-500" />
             Balance Financiero (miles $)
@@ -437,7 +438,7 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
           <ResponsiveContainer width="100%" height={150}>
             <LineChart data={monthlyFinanceData}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="week" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.3)', fontSize: 11}} />
+              <XAxis dataKey="week" axisLine={false} tickLine={false} tick={{fill: isLight ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.3)', fontSize: 11}} />
               <Tooltip 
                 contentStyle={tooltipStyle}
                 formatter={(value: number, name: string) => [`$${(value * 1000).toLocaleString()}`, name === 'income' ? 'Ingresos' : name === 'expense' ? 'Gastos' : 'Balance']}
@@ -538,7 +539,7 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
       </div>
 
       {/* SECCIÓN 5: AGENDA DEL DÍA (Timeline) */}
-      <motion.div variants={item} className="bg-[#0d0d0d] border border-white/10 p-6 rounded-3xl">
+      <motion.div variants={item} className={cn(isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10", "border p-5 sm:p-6 rounded-3xl")}>
         <h3 className="font-bold mb-6 flex items-center gap-2">
           <CalendarIcon size={18} className="text-blue-400" />
           Tu Día

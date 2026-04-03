@@ -135,9 +135,9 @@ export const Profile: React.FC = () => {
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-black text-2xl shadow-xl shadow-orange-600/20">
           {form.name?.[0]?.toUpperCase() || "U"}
         </div>
-        <div>
-          <h1 className="text-2xl font-black tracking-tight">{form.name || "Mi Perfil"}</h1>
-          <p className="text-white/40 text-sm">{profile?.email}</p>
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate">{form.name || "Mi Perfil"}</h1>
+          <p className="text-white/40 text-sm truncate">{profile?.email}</p>
         </div>
         <button
           onClick={() => {

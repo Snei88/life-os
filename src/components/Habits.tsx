@@ -332,7 +332,7 @@ const Habits: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className={cn("text-3xl font-bold tracking-tight", isLight ? "text-black" : "text-white")}>
+          <h1 className={cn("text-2xl sm:text-3xl font-bold tracking-tight", isLight ? "text-black" : "text-white")}>
             Hábitos
           </h1>
           <p className={isLight ? "text-black/60" : "text-white/60"}>Construye disciplina, un día a la vez.</p>
@@ -349,8 +349,8 @@ const Habits: React.FC = () => {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className={cn("border p-6 rounded-3xl", 
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className={cn("border p-4 sm:p-6 rounded-3xl",
           isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-500">
@@ -358,7 +358,7 @@ const Habits: React.FC = () => {
             </div>
             <span className={cn("text-xs font-bold uppercase", isLight ? "text-black/40" : "text-white/40")}>Hoy</span>
           </div>
-          <p className={cn("text-3xl font-bold", isLight ? "text-black" : "text-white")}>{todayCompleted}/{todayTotal}</p>
+          <p className={cn("text-2xl sm:text-3xl font-bold", isLight ? "text-black" : "text-white")}>{todayCompleted}/{todayTotal}</p>
           <div className="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
             <div 
               className="h-full bg-orange-500 transition-all duration-500"
@@ -367,7 +367,7 @@ const Habits: React.FC = () => {
           </div>
         </div>
 
-        <div className={cn("border p-6 rounded-3xl", 
+        <div className={cn("border p-4 sm:p-6 rounded-3xl",
           isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center text-red-500">
@@ -375,11 +375,11 @@ const Habits: React.FC = () => {
             </div>
             <span className={cn("text-xs font-bold uppercase", isLight ? "text-black/40" : "text-white/40")}>Mejor Racha</span>
           </div>
-          <p className={cn("text-3xl font-bold", isLight ? "text-black" : "text-white")}>{stats?.bestStreak || 0}</p>
+          <p className={cn("text-2xl sm:text-3xl font-bold", isLight ? "text-black" : "text-white")}>{stats?.bestStreak || 0}</p>
           <p className={cn("text-xs mt-1", isLight ? "text-black/40" : "text-white/40")}>días consecutivos</p>
         </div>
 
-        <div className={cn("border p-6 rounded-3xl", 
+        <div className={cn("border p-4 sm:p-6 rounded-3xl",
           isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-yellow-500/10 rounded-xl flex items-center justify-center text-yellow-500">
@@ -387,13 +387,13 @@ const Habits: React.FC = () => {
             </div>
             <span className={cn("text-xs font-bold uppercase", isLight ? "text-black/40" : "text-white/40")}>Logros</span>
           </div>
-          <p className={cn("text-3xl font-bold", isLight ? "text-black" : "text-white")}>
+          <p className={cn("text-2xl sm:text-3xl font-bold", isLight ? "text-black" : "text-white")}>
             {habits.filter(h => (h.streak?.current || 0) >= 7).length}
           </p>
           <p className={cn("text-xs mt-1", isLight ? "text-black/40" : "text-white/40")}>hábitos en racha</p>
         </div>
 
-        <div className={cn("border p-6 rounded-3xl", 
+        <div className={cn("border p-4 sm:p-6 rounded-3xl",
           isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center text-green-500">
@@ -401,7 +401,7 @@ const Habits: React.FC = () => {
             </div>
             <span className={cn("text-xs font-bold uppercase", isLight ? "text-black/40" : "text-white/40")}>Total</span>
           </div>
-          <p className={cn("text-3xl font-bold", isLight ? "text-black" : "text-white")}>{stats?.totalCompleted || 0}</p>
+          <p className={cn("text-2xl sm:text-3xl font-bold", isLight ? "text-black" : "text-white")}>{stats?.totalCompleted || 0}</p>
           <p className={cn("text-xs mt-1", isLight ? "text-black/40" : "text-white/40")}>completados este mes</p>
         </div>
       </div>
@@ -443,26 +443,26 @@ const Habits: React.FC = () => {
                     )}
                     onClick={() => openEditModal(habit)}
                   >
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleToggleHabit(habit);
                         }}
                         className={cn(
-                          "w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all duration-300",
+                          "w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl border-2 flex items-center justify-center transition-all duration-300",
                           isCompleted
                             ? "bg-orange-600 border-orange-600 text-white scale-110 shadow-lg shadow-orange-600/30"
-                            : isLight ? "border-black/10 hover:border-orange-600/50 hover:bg-black/5" 
+                            : isLight ? "border-black/10 hover:border-orange-600/50 hover:bg-black/5"
                             : "border-white/10 hover:border-orange-600/50 hover:bg-white/5"
                         )}
                       >
-                        <Check size={24} />
+                        <Check size={20} />
                       </button>
-                      
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className={cn("font-bold text-lg", isCompleted && "text-orange-500")}>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className={cn("font-bold text-base sm:text-lg truncate", isCompleted && "text-orange-500")}>
                             {habit.name}
                           </h3>
                           {badge && (
@@ -490,7 +490,7 @@ const Habits: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -505,7 +505,7 @@ const Habits: React.FC = () => {
                           e.stopPropagation();
                           handleDelete(habit.id);
                         }}
-                        className={cn("p-2 transition-colors opacity-0 group-hover:opacity-100", 
+                        className={cn("p-2 transition-colors sm:opacity-0 sm:group-hover:opacity-100",
                           isLight ? "text-black/20 hover:text-red-500" : "text-white/20 hover:text-red-500")}
                       >
                         <Trash2 size={18} />
@@ -558,23 +558,23 @@ const Habits: React.FC = () => {
       )}
 
       {/* Histórico Semanal */}
-      <div className={cn("border rounded-3xl p-6", isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}>
-        <div className="flex items-center justify-between mb-6">
+      <div className={cn("border rounded-3xl p-4 sm:p-6", isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <h3 className={cn("font-bold flex items-center gap-2", isLight ? "text-black" : "text-white")}>
             <Calendar size={18} className="text-orange-500" />
             Histórico Semanal
           </h3>
-          <div className="flex items-center gap-2">
-            <button 
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <button
               onClick={() => setWeekOffset(w => w - 1)}
               className={cn("p-2 rounded-lg transition-colors", isLight ? "hover:bg-black/5" : "hover:bg-white/10")}
             >
               <ChevronLeft size={18} />
             </button>
-            <span className={cn("text-sm font-medium min-w-[150px] text-center", isLight ? "text-black/60" : "text-white/60")}>
-              {weekDays[0].dayName} {weekDays[0].dayNum} - {weekDays[6].dayName} {weekDays[6].dayNum}
+            <span className={cn("text-xs sm:text-sm font-medium text-center", isLight ? "text-black/60" : "text-white/60")}>
+              {weekDays[0].dayName} {weekDays[0].dayNum} – {weekDays[6].dayName} {weekDays[6].dayNum}
             </span>
-            <button 
+            <button
               onClick={() => setWeekOffset(w => w + 1)}
               className={cn("p-2 rounded-lg transition-colors", isLight ? "hover:bg-black/5" : "hover:bg-white/10")}
             >
@@ -646,7 +646,7 @@ const Habits: React.FC = () => {
       </div>
 
       {/* Heatmap Mensual - Colapsable */}
-      <div className={cn("border rounded-3xl p-8", isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}>
+      <div className={cn("border rounded-3xl p-4 sm:p-8", isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}>
         <div className="flex items-center justify-between mb-6">
           <h3 className={cn("font-bold flex items-center gap-2", isLight ? "text-black" : "text-white")}>
             <Calendar size={18} className="text-orange-500" />

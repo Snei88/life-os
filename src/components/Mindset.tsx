@@ -88,7 +88,7 @@ function DetailModal({ record, onClose }: { record: HistoryRecord; onClose: () =
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#0d0d0d] border border-white/10 p-8 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-6"
+        className="bg-[#0d0d0d] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto space-y-6"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold">{record.date}</h2>
@@ -246,31 +246,33 @@ const Mindset: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Mindset</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Mindset</h1>
           <p className="text-white/60">Domina tu mente, domina tu destino.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 self-start sm:self-auto">
           <button
             onClick={handleResetDailyFocus}
-            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold text-white/60 hover:text-white transition-all"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold text-white/60 hover:text-white transition-all"
           >
             <RotateCcw size={14} />
-            Restablecer foco
+            <span className="hidden sm:inline">Restablecer foco</span>
+            <span className="sm:hidden">Reset</span>
           </button>
           <button
             onClick={handleSaveMindset}
             disabled={isSaving}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-60",
+              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-60",
               isSaved
                 ? "bg-green-600 text-white"
                 : "bg-orange-600 hover:bg-orange-700 text-white"
             )}
           >
             {isSaved ? <CheckCircle size={14} /> : <Save size={14} />}
-            {isSaved ? "¡Guardado!" : isSaving ? "Guardando..." : "Guardar Mindset"}
+            <span className="hidden sm:inline">{isSaved ? "¡Guardado!" : isSaving ? "Guardando..." : "Guardar Mindset"}</span>
+            <span className="sm:hidden">{isSaved ? "✓" : isSaving ? "..." : "Guardar"}</span>
           </button>
         </div>
       </div>
@@ -316,7 +318,7 @@ const Mindset: React.FC = () => {
         </div>
 
         <div className="lg:col-span-2">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-[#0d0d0d] border border-white/10 p-8 rounded-3xl space-y-6 h-full flex flex-col">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-[#0d0d0d] border border-white/10 p-5 sm:p-8 rounded-3xl space-y-6 h-full flex flex-col">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-xl flex items-center gap-2"><PenTool size={20} className="text-blue-500" />Journaling</h3>
               <span className="text-xs text-white/40 font-bold uppercase tracking-widest">{today}</span>
@@ -332,7 +334,7 @@ const Mindset: React.FC = () => {
       </div>
 
       {/* Brian Tracy */}
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }} className="bg-linear-to-br from-[#0d0d0d] to-[#1a1a1a] border border-orange-600/20 p-8 rounded-[2.5rem] relative overflow-hidden">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }} className="bg-linear-to-br from-[#0d0d0d] to-[#1a1a1a] border border-orange-600/20 p-5 sm:p-8 rounded-3xl sm:rounded-[2.5rem] relative overflow-hidden">
         <div className="absolute top-0 right-0 p-10 opacity-5"><Target size={200} /></div>
         <div className="relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
@@ -341,7 +343,7 @@ const Mindset: React.FC = () => {
                 <span className="bg-orange-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-widest">Brian Tracy</span>
                 <span className="text-orange-500 font-bold text-sm">Meta x 10</span>
               </div>
-              <h3 className="text-3xl font-bold tracking-tight">Escribe tu meta principal 10 veces</h3>
+              <h3 className="text-xl sm:text-3xl font-bold tracking-tight">Escribe tu meta principal 10 veces</h3>
               <p className="text-white/40 mt-2">Reprograma tu RAS para el éxito absoluto.</p>
             </div>
             <div className="bg-white/5 p-4 rounded-2xl border border-white/10 text-center min-w-[140px]">

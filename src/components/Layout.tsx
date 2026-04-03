@@ -68,7 +68,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
             <span className={isLight ? "text-gray-900" : "text-white"}> OS</span>
           </span>
         </div>
-        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className={cn("p-2 rounded-full transition-colors", isLight ? "hover:bg-black/5" : "hover:bg-white/5")}>
           {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </header>
@@ -105,7 +105,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
                     "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                     activeTab === item.id
                       ? "bg-orange-600 text-white shadow-lg shadow-orange-600/20"
-                      : "text-white/60 hover:text-white hover:bg-white/5"
+                      : isLight ? "text-gray-500 hover:text-gray-900 hover:bg-black/5" : "text-white/60 hover:text-white hover:bg-white/5"
                   )}
                 >
                   <item.icon size={20} className={cn(
@@ -121,7 +121,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
             </nav>
 
             {/* Perfil / Tema / Logout — siempre fijo al fondo del sidebar */}
-            <div className="flex-none pt-6 border-t border-white/10">
+            <div className={cn("flex-none pt-6 border-t", isLight ? "border-black/10" : "border-white/10")}>
               {/* Avatar + nombre + gear */}
               <div className="flex items-center gap-3 mb-4 px-2">
                 <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-500 to-red-600 flex items-center justify-center font-bold text-lg border-2 border-white/10 shrink-0">
@@ -129,7 +129,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold truncate">{profile?.name}</p>
-                  <p className="text-xs text-white/40 truncate">Bronze I</p>
+                  <p className={cn("text-xs truncate", isLight ? "text-black/40" : "text-white/40")}>Bronze I</p>
                 </div>
                 <button
                   onClick={() => { setActiveTab("mi-perfil"); setIsSidebarOpen(false); }}
@@ -138,7 +138,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
                     "p-1.5 rounded-lg transition-colors shrink-0",
                     activeTab === "mi-perfil"
                       ? "text-orange-400 bg-orange-500/10"
-                      : "text-white/30 hover:text-white/70 hover:bg-white/5"
+                      : isLight ? "text-black/30 hover:text-black/70 hover:bg-black/5" : "text-white/30 hover:text-white/70 hover:bg-white/5"
                   )}
                 >
                   <Settings size={16} />
@@ -147,14 +147,14 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
 
               {/* Tema */}
               <div className="flex items-center justify-between px-2 mb-2">
-                <span className="text-xs text-white/40 font-bold uppercase tracking-widest">Tema</span>
+                <span className={cn("text-xs font-bold uppercase tracking-widest", isLight ? "text-black/40" : "text-white/40")}>Tema</span>
                 <ThemeToggle />
               </div>
 
               {/* Logout */}
               <button
                 onClick={() => logout()}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-red-500 hover:bg-red-500/10 transition-all duration-200"
+                className={cn("w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:text-red-500 hover:bg-red-500/10 transition-all duration-200", isLight ? "text-gray-500" : "text-white/60")}
               >
                 <LogOut size={20} />
                 <span className="font-medium">Cerrar Sesión</span>

@@ -150,7 +150,7 @@ const MealModal: React.FC<MealModalProps> = ({ initial, foodItems, onSave, onClo
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
         transition={{ layout: { duration: 0.35, ease: "easeInOut" } }}
-        className="bg-[#111] border border-white/10 p-8 rounded-3xl w-full max-w-md space-y-5 shrink-0"
+        className="bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5 shrink-0"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">
@@ -375,7 +375,7 @@ const RulesModal: React.FC<RulesModalProps> = ({ rules, onAdd, onDelete, onClose
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
-        className="bg-[#111] border border-white/10 p-8 rounded-3xl w-full max-w-md space-y-5"
+        className="bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">Reglas de Oro</h2>
@@ -554,7 +554,7 @@ const Nutrition: React.FC<NutritionProps> = ({ openMealModal, onMealModalOpened 
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Nutrición</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Nutrición</h1>
           <p className="text-white/50 text-sm flex items-center gap-1 mt-0.5">
             <CalendarDays size={13} />{today}
           </p>
@@ -585,7 +585,7 @@ const Nutrition: React.FC<NutritionProps> = ({ openMealModal, onMealModalOpened 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Macros */}
-        <div className="bg-[#0d0d0d] border border-white/10 p-8 rounded-3xl space-y-5">
+        <div className="bg-[#0d0d0d] border border-white/10 p-5 sm:p-8 rounded-3xl space-y-5">
           <div className="flex items-center justify-between">
             <h3 className="font-bold flex items-center gap-2">
               <Zap size={18} className="text-orange-500" />Macros del día
@@ -762,18 +762,18 @@ const Nutrition: React.FC<NutritionProps> = ({ openMealModal, onMealModalOpened 
                           key={meal.id}
                           className="flex items-center justify-between group bg-white/3 hover:bg-white/5 rounded-xl px-4 py-3 transition-colors"
                         >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-white/5 rounded-lg flex items-center justify-center">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="w-8 h-8 shrink-0 bg-white/5 rounded-lg flex items-center justify-center">
                               <Utensils size={14} className="text-white/30" />
                             </div>
-                            <div>
-                              <p className="font-bold text-sm">{meal.name}</p>
-                              <p className="text-[11px] text-white/40">
+                            <div className="min-w-0">
+                              <p className="font-bold text-sm truncate">{meal.name}</p>
+                              <p className="text-[11px] text-white/40 truncate">
                                 {meal.calories} kcal · {meal.protein}g P · {meal.carbs}g C · {meal.fat}g G
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center gap-1 shrink-0 ml-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={() => { setEditingMeal(meal); setShowMealModal(true); }}
                               className="p-1.5 text-white/30 hover:text-blue-400 transition-colors"

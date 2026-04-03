@@ -116,13 +116,13 @@ const GoalModal: React.FC<GoalModalProps> = ({ goal, onClose, onSave, onDelete }
   const { text: pText } = progressColor(form.progress);
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center gap-4 p-4">
+    <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center gap-4 p-4 overflow-y-auto">
       <motion.div
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1, x: infoExpanded ? -90 : 0 }}
         exit={{ scale: 0.92, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="bg-[#111] border border-white/10 p-8 rounded-3xl w-full max-w-lg shadow-2xl shrink-0"
+        className="bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-lg shadow-2xl shrink-0 my-auto"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">{goal ? "Editar Meta" : "Nueva Meta"}</h2>
@@ -505,14 +505,14 @@ const Goals: React.FC<GoalsProps> = ({ openGoalModal, onGoalModalOpened }) => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Metas</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Metas</h1>
           <p className="text-white/40 text-sm mt-1">Visualiza tu futuro y trabaja por él.</p>
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-purple-600/25 text-sm"
+          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-purple-600/25 text-sm self-start sm:self-auto"
         >
           <Plus size={18} />Nueva Meta
         </button>
@@ -520,7 +520,7 @@ const Goals: React.FC<GoalsProps> = ({ openGoalModal, onGoalModalOpened }) => {
 
       {/* Stats strip */}
       {goals.length > 0 && (
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { label: "Total",      value: stats.total,       icon: <Target size={16} />,       color: "text-white/60" },
             { label: "Completadas",value: stats.done,         icon: <CheckCircle2 size={16} />, color: "text-emerald-400" },
