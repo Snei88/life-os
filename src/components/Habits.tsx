@@ -13,6 +13,7 @@ import { api } from "../api";
 import { useData } from "../hooks/useData";
 import { cn } from "../lib/utils";
 import { getLogicalDate } from "../lib/dateUtils";
+import { useIsCompact } from "../hooks/useIsCompact";
 import type { Habit, HabitStats, Frequency } from "../types";
 
 const CATEGORIES = {
@@ -35,6 +36,7 @@ const WEEK_DAYS = [
 const Habits: React.FC = () => {
   const { refresh } = useData();
   const { resolvedTheme } = useTheme();
+  const isCompact = useIsCompact();
   const isLight = resolvedTheme === "light";
   const today = getLogicalDate();
   const currentDate = new Date();
@@ -717,11 +719,11 @@ const Habits: React.FC = () => {
 
       {/* Modal Detalle Día */}
       {selectedDay && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="mobile-modal-shell fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className={cn("border rounded-3xl p-6 w-full max-w-md", 
+            className={cn("mobile-modal-card border rounded-3xl p-6 w-full max-w-md", 
               isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}
           >
             <div className="flex items-center justify-between mb-4">
@@ -771,7 +773,7 @@ const Habits: React.FC = () => {
       {/* Modal Nuevo/Editar Hábito */}
       <AnimatePresence onExitComplete={() => setInfoExpanded(false)}>
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="mobile-modal-shell fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
             <div className={cn(
               "flex gap-6 w-full max-w-5xl justify-center",
               infoExpanded ? "items-start" : "items-center",
@@ -784,11 +786,11 @@ const Habits: React.FC = () => {
                 animate={{ 
                   scale: 1, 
                   opacity: 1, 
-                  x: infoExpanded ? -40 : 0 
+                  x: infoExpanded && !isCompact ? -40 : 0 
                 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className={cn("border rounded-3xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto flex-shrink-0",
+                className={cn("mobile-modal-card border rounded-3xl p-5 sm:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto flex-shrink-0",
                   isLight ? "bg-white border-black/10" : "bg-[#0d0d0d] border-white/10")}
               >
                 <h2 className={cn("text-2xl font-bold mb-6", isLight ? "text-black" : "text-white")}>

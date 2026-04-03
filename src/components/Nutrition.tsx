@@ -11,6 +11,7 @@ import { api } from "../api";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { useData } from "../hooks/useData";
+import { useIsCompact } from "../hooks/useIsCompact";
 import { cn } from "../lib/utils";
 import { getLogicalDate } from "../lib/dateUtils";
 import { Meal, FoodItem, NutritionRule } from "../types";
@@ -86,6 +87,7 @@ interface MealModalProps {
 }
 
 const MealModal: React.FC<MealModalProps> = ({ initial, foodItems, onSave, onClose }) => {
+  const isCompact = useIsCompact();
   const [form, setForm] = useState({
     name:     initial?.name     ?? "",
     calories: initial?.calories ?? 0,
@@ -143,14 +145,14 @@ const MealModal: React.FC<MealModalProps> = ({ initial, foodItems, onSave, onClo
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center gap-8 p-4">
+    <div className="mobile-modal-shell fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center gap-8 p-4 overflow-y-auto">
       <motion.div
         layout
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
         transition={{ layout: { duration: 0.35, ease: "easeInOut" } }}
-        className="bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5 shrink-0"
+        className="mobile-modal-card bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5 shrink-0"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">
@@ -160,6 +162,23 @@ const MealModal: React.FC<MealModalProps> = ({ initial, foodItems, onSave, onClo
             <X size={20} />
           </button>
         </div>
+
+        {isCompact && (
+          <button
+            type="button"
+            onClick={() => setInfoExpanded((prev) => !prev)}
+            className="w-full text-left text-xs font-bold text-orange-300/80 bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+          >
+            {infoExpanded ? "Ocultar tip nutricional" : "Ver tip nutricional"}
+          </button>
+        )}
+
+        {isCompact && infoExpanded && (
+          <div className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-2 text-sm text-white/75 leading-relaxed">
+            <p>La hora de la comida pesa menos que el total diario y la calidad de lo que comes.</p>
+            <p className="text-xs text-white/45">Prioriza consistencia, porciones y alimentos fáciles de repetir.</p>
+          </div>
+        )}
 
         {/* Búsqueda de alimentos guardados */}
         <div className="relative">
@@ -277,7 +296,7 @@ const MealModal: React.FC<MealModalProps> = ({ initial, foodItems, onSave, onClo
       </motion.div>
 
       {/* Bloque informativo */}
-      <div className="nutrition-info flex flex-col w-[440px] shrink-0">
+      <div className="nutrition-info hidden lg:flex flex-col w-[440px] shrink-0">
         <AnimatePresence mode="wait">
           {!infoExpanded ? (
             <motion.div
@@ -370,12 +389,12 @@ interface RulesModalProps {
 const RulesModal: React.FC<RulesModalProps> = ({ rules, onAdd, onDelete, onClose }) => {
   const [newRule, setNewRule] = useState("");
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="mobile-modal-shell fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
       <motion.div
         initial={{ scale: 0.92, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
-        className="bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5"
+        className="mobile-modal-card bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5"
       >
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">Reglas de Oro</h2>

@@ -54,11 +54,11 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
 
   return (
     // h-screen + overflow-hidden en el wrapper → solo el main hace scroll
-    <div className={cn("h-screen overflow-hidden flex flex-col font-sans selection:bg-orange-500/30", isLight ? "bg-gray-50 text-gray-900" : "bg-[#0a0a0a] text-white")}>
+    <div className={cn("h-dvh overflow-hidden flex flex-col font-sans selection:bg-orange-500/30", isLight ? "bg-gray-50 text-gray-900" : "bg-[#0a0a0a] text-white")}>
 
       {/* Mobile Header */}
       <header className={cn(
-        "lg:hidden flex-none flex items-center justify-between p-4 border-b backdrop-blur-md z-50",
+        "lg:hidden flex-none sticky top-0 flex items-center justify-between p-4 border-b backdrop-blur-md z-50",
         isLight ? "border-black/10 bg-gray-50/80 text-gray-900" : "border-white/10 bg-[#0a0a0a]/80"
       )}>
         <div className="flex items-center gap-2">
@@ -164,8 +164,8 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
         </aside>
 
         {/* Main content — único elemento que hace scroll */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto p-4 lg:p-8">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain">
+          <div className="max-w-7xl mx-auto p-4 pb-24 lg:p-8">
             {children}
           </div>
         </main>

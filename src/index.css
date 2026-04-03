@@ -33,6 +33,15 @@ body {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+html, body, #root {
+  min-height: 100dvh;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 /* ─── LIGHT MODE OVERRIDES ─────────────────────────────────────────────────── */
@@ -216,4 +225,30 @@ body > div[style*="position: fixed"][style*="z-index: 9999"] {
 /* Asegurar que las animaciones no causen overflow issues */
 * {
   animation-fill-mode: both !important;
+}
+
+/* Evitar rebotes y desbordes laterales en mobile */
+body,
+[data-mobile-scroll-root="true"] {
+  overscroll-behavior-x: none;
+}
+
+/* Reducir carga visual y glitches táctiles en pantallas pequeñas */
+@media (max-width: 1023px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .mobile-modal-shell {
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+    overflow-y: auto;
+  }
+
+  .mobile-modal-card {
+    max-height: min(88dvh, 48rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

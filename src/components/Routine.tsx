@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Plus, Clock, Pencil, Trash2, CalendarDays, LayoutGrid } from "lucide-react";
 import { api } from "../api";
 import { useData } from "../hooks/useData";
+import { useIsCompact } from "../hooks/useIsCompact";
 import { cn, getDayName } from "../lib/utils";
 import { ScheduleEvent } from "../types";
 
@@ -92,6 +93,7 @@ interface EventModalProps {
 }
 
 const EventModal: React.FC<EventModalProps> = ({ event, defaultDay, allEvents, onClose, onSave, onDelete }) => {
+  const isCompact = useIsCompact();
   const [form, setForm] = useState<ReturnType<typeof emptyForm>>(
     event
       ? {
@@ -125,7 +127,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, defaultDay, allEvents, o
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center gap-8 p-4 flex-wrap overflow-y-auto">
+    <div className="mobile-modal-shell fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center gap-8 p-4 flex-wrap overflow-y-auto">
       {/* Modal Principal */}
       <motion.div
         layout
@@ -133,7 +135,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, defaultDay, allEvents, o
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.92, opacity: 0 }}
         transition={{ layout: { duration: 0.35, ease: "easeInOut" } }}
-        className="bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5 shrink-0 my-auto"
+        className="mobile-modal-card bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-md space-y-5 shrink-0 my-auto"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">{event ? "Editar actividad" : "Nueva actividad"}</h2>
@@ -143,6 +145,23 @@ const EventModal: React.FC<EventModalProps> = ({ event, defaultDay, allEvents, o
             </button>
           )}
         </div>
+
+        {isCompact && (
+          <button
+            type="button"
+            onClick={() => setInfoExpanded((prev) => !prev)}
+            className="w-full text-left text-xs font-bold text-orange-300 bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+          >
+            {infoExpanded ? "Ocultar consejo" : "Ver consejo"}
+          </button>
+        )}
+
+        {isCompact && infoExpanded && (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2 text-sm text-white/75 leading-relaxed">
+            <p>Entrenar todos los días no suele ser mejor. El progreso depende también de recuperación y carga.</p>
+            <p className="text-xs text-white/45">Una rutina sostenible normalmente alterna estímulo, descanso y volumen realista.</p>
+          </div>
+        )}
 
         <div className="space-y-4">
           <input
@@ -247,7 +266,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, defaultDay, allEvents, o
       </motion.div>
 
       {/* Bloque Informativo ACSM - A la derecha */}
-      <div className="hidden lg:flex flex-col w-[440px] shrink-0 my-auto">
+        <div className="hidden lg:flex flex-col w-[440px] shrink-0 my-auto">
         <AnimatePresence mode="wait">
           {!infoExpanded ? (
             <motion.div

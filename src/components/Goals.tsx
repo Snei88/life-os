@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { api } from "../api";
 import { useData } from "../hooks/useData";
+import { useIsCompact } from "../hooks/useIsCompact";
 import { cn } from "../lib/utils";
 import { Goal } from "../types";
 
@@ -81,6 +82,7 @@ interface GoalModalProps {
 }
 
 const GoalModal: React.FC<GoalModalProps> = ({ goal, onClose, onSave, onDelete }) => {
+  const isCompact = useIsCompact();
   const [form, setForm] = useState<ReturnType<typeof emptyForm>>(
     goal
       ? {
@@ -116,13 +118,13 @@ const GoalModal: React.FC<GoalModalProps> = ({ goal, onClose, onSave, onDelete }
   const { text: pText } = progressColor(form.progress);
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center gap-4 p-4 overflow-y-auto">
+    <div className="mobile-modal-shell fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center gap-4 p-4 overflow-y-auto">
       <motion.div
         initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1, x: infoExpanded ? -90 : 0 }}
+        animate={{ scale: 1, opacity: 1, x: infoExpanded && !isCompact ? -90 : 0 }}
         exit={{ scale: 0.92, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-lg shadow-2xl shrink-0 my-auto"
+        className="mobile-modal-card bg-[#111] border border-white/10 p-5 sm:p-8 rounded-3xl w-full max-w-lg shadow-2xl shrink-0 my-auto"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">{goal ? "Editar Meta" : "Nueva Meta"}</h2>
@@ -133,10 +135,28 @@ const GoalModal: React.FC<GoalModalProps> = ({ goal, onClose, onSave, onDelete }
             >
               <Trash2 size={18} />
             </button>
-          )}
-        </div>
+            )}
+          </div>
 
-        <div className="space-y-4">
+          {!goal && isCompact && (
+            <>
+              <button
+                type="button"
+                onClick={() => setInfoExpanded((prev) => !prev)}
+                className="w-full text-left text-xs font-bold text-purple-300 bg-white/5 border border-white/10 rounded-xl px-4 py-3"
+              >
+                {infoExpanded ? "Ocultar guía rápida" : "Ver guía rápida"}
+              </button>
+              {infoExpanded && (
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2 text-sm text-white/75 leading-relaxed">
+                  <p>Las metas funcionan mejor cuando son claras, medibles y tienen fecha límite.</p>
+                  <p className="text-xs text-white/45">Si dudas, reduce alcance y define el siguiente hito en vez de una meta ambigua.</p>
+                </div>
+              )}
+            </>
+          )}
+
+          <div className="space-y-4">
           {/* Title */}
           <input
             type="text"

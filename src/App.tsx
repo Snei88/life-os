@@ -1,26 +1,37 @@
 // src/App.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { useAuth } from "./hooks/useAuth";
 import { useTheme } from "./hooks/useTheme";
 import Layout from "./components/Layout";
-import Dashboard from "./components/Dashboard";
-import Habits from "./components/Habits";
-import Nutrition from "./components/Nutrition";
-import Gym from "./components/Gym";
-import Finance from "./components/Finance";
-import Routine from "./components/Routine";
-import Goals from "./components/Goals";
-import Mindset from "./components/Mindset";
 import Auth from "./components/Auth";
-import { OnboardingWizard } from "./components/OnboardingWizard";
-import { AIRecommendations } from "./components/AIRecommendations";
-import { Profile } from "./components/Profile";
 import { motion, AnimatePresence } from "motion/react";
 import { GuidedTourProvider, useGuidedTour } from "./hooks/useGuidedTour";
+import { useIsCompact } from "./hooks/useIsCompact";
+
+const Dashboard = lazy(() => import("./components/Dashboard"));
+const Habits = lazy(() => import("./components/Habits"));
+const Nutrition = lazy(() => import("./components/Nutrition"));
+const Gym = lazy(() => import("./components/Gym"));
+const Finance = lazy(() => import("./components/Finance"));
+const Routine = lazy(() => import("./components/Routine"));
+const Goals = lazy(() => import("./components/Goals"));
+const Mindset = lazy(() => import("./components/Mindset"));
+const OnboardingWizard = lazy(() => import("./components/OnboardingWizard").then((module) => ({ default: module.OnboardingWizard })));
+const AIRecommendations = lazy(() => import("./components/AIRecommendations").then((module) => ({ default: module.AIRecommendations })));
+const Profile = lazy(() => import("./components/Profile").then((module) => ({ default: module.Profile })));
+
+function ContentFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center">
+      <div className="h-10 w-10 rounded-full border-4 border-orange-600 border-t-transparent animate-spin" />
+    </div>
+  );
+}
 
 function AppContent() {
   const { profile, loading } = useAuth();
   const { resolvedTheme } = useTheme();
+  const isCompact = useIsCompact();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [pendingAction, setPendingAction] = useState<{ tab: string; action?: string } | null>(null);
@@ -32,12 +43,13 @@ function AppContent() {
 
   // Detectar cambios de estado para transiciones suaves
   useEffect(() => {
-    if (profile) {
+    if (profile && !isCompact) {
       setIsTransitioning(true);
       const timer = setTimeout(() => setIsTransitioning(false), 500);
       return () => clearTimeout(timer);
     }
-  }, [profile?.id]);
+    setIsTransitioning(false);
+  }, [isCompact, profile?.id]);
 
   if (loading || isTransitioning) {
     return (
@@ -111,7 +123,12 @@ function AppContent() {
       <AuthenticatedAppLayout
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        renderContent={renderContent}
+        renderContent={() => (
+          <Suspense fallback={<ContentFallback />}>
+            {renderContent()}
+          </Suspense>
+        )}
+        isCompact={isCompact}
       />
     </GuidedTourProvider>
   );
@@ -121,22 +138,24 @@ function AuthenticatedAppLayout({
   activeTab,
   setActiveTab,
   renderContent,
+  isCompact,
 }: {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   renderContent: () => React.ReactNode;
+  isCompact: boolean;
 }) {
   const { isActive } = useGuidedTour();
 
   return (
     <Layout activeTab={activeTab} setActiveTab={setActiveTab} forceSidebarOpen={isActive}>
-      <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence mode={isCompact ? "wait" : "popLayout"} initial={false}>
         <motion.div
           key={activeTab}
-          initial={{ opacity: 0, x: 20 }}
+          initial={isCompact ? { opacity: 0 } : { opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          exit={isCompact ? { opacity: 0 } : { opacity: 0, x: -20 }}
+          transition={{ duration: isCompact ? 0.18 : 0.3, ease: "easeInOut" }}
         >
           {renderContent()}
         </motion.div>
