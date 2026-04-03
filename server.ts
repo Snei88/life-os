@@ -1,8 +1,7 @@
-//sERVERtsport "dotenv/config";
+import "dotenv/config";
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import path from "path";
-import { fileURLToPath } from "url";
 import { setupUser } from "./server/supabase.js";
 import authRoutes from "./server/routes/auth.js";
 import habitsRoutes from "./server/routes/habits.js";
@@ -17,14 +16,11 @@ import foodItemsRouter from "./server/routes/foodItems.js";
 import waterRouter from "./server/routes/water.js";
 import nutritionRulesRouter from "./server/routes/nutritionRules.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 async function startServer() {
   await setupUser();
 
   const app = express();
-  const PORT = 3008
+  const port = Number(process.env.PORT) || 3008;
 
   app.use(express.json());
 
@@ -55,8 +51,8 @@ async function startServer() {
     app.get("*", (_req, res) => res.sendFile(path.join(distPath, "index.html")));
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`🚀 Life OS corriendo en http://localhost:${PORT}`);
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`Life OS corriendo en http://localhost:${port}`);
   });
 }
 
