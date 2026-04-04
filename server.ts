@@ -15,6 +15,7 @@ import usersRoutes from "./server/routes/users.js";
 import foodItemsRouter from "./server/routes/foodItems.js";
 import waterRouter from "./server/routes/water.js";
 import nutritionRulesRouter from "./server/routes/nutritionRules.js";
+import nutritionRouter from "./server/routes/nutrition.js";
 
 async function startServer() {
   await setupUser();
@@ -36,6 +37,7 @@ async function startServer() {
   app.use("/api/food-items", foodItemsRouter);
   app.use("/api/water", waterRouter);
   app.use("/api/nutrition-rules", nutritionRulesRouter);
+  app.use("/api/nutrition", nutritionRouter);
 
   app.get("/api/health", (_req, res) => res.json({ status: "ok", db: "supabase" }));
 
