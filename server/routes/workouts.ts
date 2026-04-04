@@ -155,17 +155,18 @@ router.post("/routines", requireAuth, async (req: AuthRequest, res: Response) =>
 router.post("/", requireAuth, async (req: AuthRequest, res: Response) => {
   const { routineId, date, notes = "" } = req.body;
 
-  // Verificar si ya hay sesión en el mismo día
-  const todayDate = date || new Date().toISOString().split('T')[0];
+  // Verificar si ya hay sesión activa (sin ended_at) para este usuario
   const { data: activeSession } = await supabase
     .from("workout_sessions")
-    .select("id")
+    .select("id, date")
     .eq("user_id", req.userId)
-    .eq("date", todayDate)
+    .is("ended_at", null)
     .maybeSingle();
 
   if (activeSession) {
-    res.status(400).json({ message: "Ya tienes una sesión activa. Finalízala antes de iniciar otra." });
+    res.status(400).json({
+      message: `Ya tienes una sesión activa del día ${activeSession.date}. Finalízala antes de iniciar otra.`,
+    });
     return;
   }
 
