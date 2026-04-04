@@ -43,5 +43,16 @@ router.delete("/:id", requireAuth, async (req: AuthRequest, res: Response) => {
   res.json({ ok: true });
 });
 
-// Ruta para editar meals (PUT que falta en el backend actual)
+// GET fechas únicas con registros de comidas
+router.get("/meals/dates", requireAuth, async (req: AuthRequest, res: Response) => {
+  const { data, error } = await supabase
+    .from("meals")
+    .select("date")
+    .eq("user_id", req.userId)
+    .order("date", { ascending: true });
+  if (error) { res.status(500).json({ message: error.message }); return; }
+  const uniqueDates = [...new Set(data?.map((d: any) => d.date))].sort();
+  res.json(uniqueDates);
+});
+
 export default router;
