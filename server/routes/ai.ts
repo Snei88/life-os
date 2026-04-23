@@ -170,13 +170,79 @@ type CopilotInsight = {
   summary: string;
 };
 
+type ParsedGroqPayload = {
+  reply: string;
+  insights?: CopilotInsight[];
+  actions?: CopilotAction[];
+};
+
 function todayDate() {
   return new Date().toISOString().split("T")[0];
 }
 
 function clampText(value: unknown, max = 240) {
   if (typeof value !== "string") return "";
-  return value.length > max ? `${value.slice(0, max - 1)}…` : value;
+  return value.length > max ? `${value.slice(0, max - 1)}...` : value;
+}
+
+function normalizeText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+}
+
+function isLifeOSRelatedQuery(message: string) {
+  const text = normalizeText(message);
+  const allowedKeywords = [
+    "habit",
+    "disciplina",
+    "rutina",
+    "agenda",
+    "caloria",
+    "proteina",
+    "comida",
+    "nutric",
+    "finanza",
+    "gasto",
+    "ahorro",
+    "emergencia",
+    "gym",
+    "entren",
+    "workout",
+    "meta",
+    "goal",
+    "mindset",
+    "journal",
+    "gratitud",
+    "afirm",
+    "life os",
+    "modulo",
+    "perfil",
+    "productividad",
+    "crecimiento",
+    "personal",
+    "sistema",
+  ];
+
+  return allowedKeywords.some((keyword) => text.includes(keyword));
+}
+
+function buildScopeReply() {
+  return {
+    reply:
+      "Solo respondo temas relacionados con Life OS: habitos, nutricion, gym, finanzas, rutina, metas, mindset, perfil y crecimiento personal dentro del sistema. No atiendo preguntas fuera de ese contexto.",
+    insights: [
+      {
+        id: "scope-guard",
+        module: "dashboard",
+        tone: "warning" as const,
+        title: "Consulta fuera de contexto",
+        summary: "Conecta la pregunta con tus 8 modulos o con una mejora dentro de Life OS.",
+      },
+    ],
+    actions: [],
+  };
 }
 
 async function getUserContext(userId: number) {
@@ -261,38 +327,13 @@ async function getUserContext(userId: number) {
         }
       : null,
     summary: {
-      habitsToday: {
-        completed: completedToday,
-        total: habits.length,
-      },
-      nutritionToday: {
-        calories: todayCalories,
-        protein: todayProtein,
-        meals: todayMeals.length,
-        water: waterToday,
-      },
-      financeMonth: {
-        income,
-        expense,
-        balance: income - expense,
-      },
-      goals: {
-        total: goals.length,
-        active: activeGoals.length,
-      },
-      mindset: {
-        journalEntries14d: journal.length,
-        brianEntries14d: brian.length,
-        lastJournal,
-      },
-      gym: {
-        sessions14d: sessions.length,
-        routines: routines.length,
-        lastWorkout,
-      },
-      routine: {
-        events: schedule.length,
-      },
+      habitsToday: { completed: completedToday, total: habits.length },
+      nutritionToday: { calories: todayCalories, protein: todayProtein, meals: todayMeals.length, water: waterToday },
+      financeMonth: { income, expense, balance: income - expense },
+      goals: { total: goals.length, active: activeGoals.length },
+      mindset: { journalEntries14d: journal.length, brianEntries14d: brian.length, lastJournal },
+      gym: { sessions14d: sessions.length, routines: routines.length, lastWorkout },
+      routine: { events: schedule.length },
     },
     raw: {
       habits: habits.slice(0, 12).map((habit: any) => ({
@@ -365,7 +406,7 @@ function buildFallbackInsights(context: Awaited<ReturnType<typeof getUserContext
       module: "habits",
       tone: "warning",
       title: "Disciplina incompleta hoy",
-      summary: `Llevas ${habits.completed} de ${habits.total} hábitos. Conviene reducir fricción o reagendar los más fallados.`,
+      summary: `Llevas ${habits.completed} de ${habits.total} habitos. Conviene reducir friccion o reagendar los mas fallados.`,
     });
   }
 
@@ -374,8 +415,8 @@ function buildFallbackInsights(context: Awaited<ReturnType<typeof getUserContext
       id: "nutrition-gap",
       module: "nutrition",
       tone: "warning",
-      title: "Nutrición por debajo del objetivo",
-      summary: `Hoy vas en ${calories} kcal frente a una meta de ${target}. Una comida simple o snack alto en proteína ayudaría.`,
+      title: "Nutricion por debajo del objetivo",
+      summary: `Hoy vas en ${calories} kcal frente a una meta de ${target}. Una comida simple o snack alto en proteina ayudaria.`,
     });
   }
 
@@ -385,7 +426,7 @@ function buildFallbackInsights(context: Awaited<ReturnType<typeof getUserContext
       module: "finance",
       tone: "warning",
       title: "Mes en rojo",
-      summary: "Tus gastos del mes ya superan los ingresos. La IA puede ayudarte a recortar y fijar un plan de ahorro.",
+      summary: "Tus gastos del mes ya superan los ingresos. Conviene recortar y fijar un plan visible de ahorro.",
     });
   }
 
@@ -394,8 +435,8 @@ function buildFallbackInsights(context: Awaited<ReturnType<typeof getUserContext
       id: "gym-gap",
       module: "gym",
       tone: "coach",
-      title: "Tu sistema necesita una rutina activa",
-      summary: "No hay entrenamientos recientes. Tiene sentido crear una rutina mínima y ubicarla en agenda.",
+      title: "Tu sistema fisico no tiene traccion reciente",
+      summary: "No hay entrenamientos recientes. Tiene sentido crear una rutina minima y ubicarla en agenda.",
     });
   }
 
@@ -405,7 +446,7 @@ function buildFallbackInsights(context: Awaited<ReturnType<typeof getUserContext
       module: "dashboard",
       tone: "opportunity",
       title: "Sistema estable",
-      summary: "Tu base está relativamente ordenada. Este es el momento para optimizar, no para apagar incendios.",
+      summary: "Tu base esta relativamente ordenada. Este es el momento para optimizar, no para apagar incendios.",
     });
   }
 
@@ -420,90 +461,210 @@ function sanitizeAction(action: any): CopilotAction | null {
   return {
     type: action.type,
     module: action.module,
-    title: typeof action.title === "string" ? action.title : "Acción sugerida",
+    title: typeof action.title === "string" ? action.title : "Accion sugerida",
     reason: typeof action.reason === "string" ? action.reason : "",
     payload: action.payload && typeof action.payload === "object" ? action.payload : {},
   } as CopilotAction;
 }
 
 function extractJsonBlock(input: string) {
-  const start = input.indexOf("{");
-  const end = input.lastIndexOf("}");
+  const direct = input.trim();
+  const stripped = direct.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
+  const start = stripped.indexOf("{");
+  const end = stripped.lastIndexOf("}");
   if (start === -1 || end === -1 || end <= start) return null;
-  return input.slice(start, end + 1);
+  return stripped.slice(start, end + 1);
+}
+
+function tryParseGroqPayload(content: unknown): ParsedGroqPayload | null {
+  const raw =
+    typeof content === "string"
+      ? content
+      : Array.isArray(content)
+        ? content.map((item: any) => (typeof item?.text === "string" ? item.text : "")).join("\n")
+        : "";
+
+  if (!raw) return null;
+
+  const candidates = [raw.trim(), extractJsonBlock(raw)];
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    try {
+      const parsed = JSON.parse(candidate);
+      if (parsed && typeof parsed.reply === "string") {
+        return parsed;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+}
+
+function buildFallbackReply(context: Awaited<ReturnType<typeof getUserContext>>, latestMessage: string) {
+  const latest = normalizeText(latestMessage);
+  const parts: string[] = [];
+  const { habitsToday, nutritionToday, financeMonth, goals, gym } = context.summary;
+  const target = Number(context.profile?.gymTargetKcal || 0);
+
+  if (latest.includes("patron") || latest.includes("analiza") || latest.includes("diagnost")) {
+    if (habitsToday.total > 0 && habitsToday.completed < habitsToday.total) {
+      parts.push(`estas dejando habitos incompletos (${habitsToday.completed}/${habitsToday.total})`);
+    }
+    if (nutritionToday.meals === 0 || (target > 0 && nutritionToday.calories < target * 0.7)) {
+      parts.push(`tu nutricion va corta hoy (${nutritionToday.calories} kcal)`);
+    }
+    if (financeMonth.balance < 0) {
+      parts.push(`este mes vas en balance negativo (${financeMonth.balance})`);
+    }
+    if (gym.sessions14d === 0) {
+      parts.push("tu sistema fisico no tiene traccion reciente");
+    }
+    if (goals.active > 0) {
+      parts.push(`tienes ${goals.active} metas activas que conviene aterrizar a ejecucion semanal`);
+    }
+  }
+
+  if (parts.length === 0) {
+    parts.push("tu sistema necesita mas acciones conectadas entre modulos para corregirte el rumbo con mas fuerza");
+  }
+
+  const actions: CopilotAction[] = [];
+  if (habitsToday.total === 0) {
+    actions.push({
+      type: "create_habit",
+      module: "habits",
+      title: "Crear habito base de disciplina",
+      reason: "Tu sistema necesita un ancla diaria visible.",
+      payload: {
+        name: "Planificar el dia",
+        category: "productividad",
+        color: "orange",
+        frequency: { type: "daily" },
+        targetStreak: 21,
+      },
+    });
+  }
+  if (nutritionToday.meals === 0) {
+    actions.push({
+      type: "add_meal",
+      module: "nutrition",
+      title: "Agregar snack proteico sugerido",
+      reason: "No hay comida registrada hoy y eso rompe el analisis nutricional.",
+      payload: {
+        date: context.today,
+        name: "Snack proteico sugerido",
+        calories: 320,
+        protein: 28,
+        carbs: 24,
+        fat: 10,
+        mealType: "snack",
+      },
+    });
+  }
+  if (financeMonth.balance < 0) {
+    actions.push({
+      type: "create_goal",
+      module: "goals",
+      title: "Crear meta de recorte financiero",
+      reason: "Tu balance mensual va en rojo y conviene volverlo visible.",
+      payload: {
+        title: "Reducir gastos impulsivos este mes",
+        description: "Meta sugerida por la IA para recuperar balance mensual.",
+        level: "90d",
+        category: "Financiero",
+        priority: "Alta",
+        progress: 0,
+      },
+    });
+  }
+
+  return {
+    reply: `Veo este patron principal: ${parts.join(", ")}. Eso indica que Life OS ya esta capturando senales, pero todavia no te esta corrigiendo el rumbo con suficiente intensidad. Te deje insights concretos y acciones que puedo aplicar dentro de los modulos.`,
+    insights: buildFallbackInsights(context),
+    actions: actions.slice(0, 4),
+  };
 }
 
 async function callGroq(messages: ChatMessage[], context: Awaited<ReturnType<typeof getUserContext>>) {
   const apiKey = process.env.GROQ_API_KEY;
-  if (!apiKey) {
-    return null;
-  }
+  if (!apiKey) return null;
 
   const system = `
 Eres Life OS Copilot, una IA integrada al sistema del usuario.
-Tu trabajo es:
-1. Responder en español, directo, útil y con tono ejecutivo.
-2. Analizar el contexto real del usuario.
-3. Detectar patrones cruzados entre hábitos, nutrición, gym, finanzas, rutina, metas, mindset y perfil.
-4. Proponer acciones ejecutables dentro del sistema.
+Tu unico dominio de trabajo es Life OS.
+
+Alcance permitido:
+- habitos
+- nutricion
+- gym
+- finanzas
+- rutina
+- metas
+- mindset
+- perfil
+- crecimiento personal dentro del sistema Life OS
 
 Reglas:
-- No inventes datos fuera del contexto.
-- Sé concreto: explica el patrón, la consecuencia y la mejora.
-- Puedes sugerir acciones en varios módulos.
-- Si propones acciones, deben ser seguras, específicas y realistas.
+- Si el usuario pregunta algo fuera de ese alcance, rechaza la consulta con una frase corta y deja claro que solo trabajas dentro de Life OS.
+- Responde en espanol.
+- Analiza el contexto real del usuario y detecta patrones cruzados.
+- Se concreto: patron, consecuencia, mejora.
+- Si propones acciones, deben ser seguras y ejecutables dentro del sistema.
 - Devuelve JSON puro con esta forma:
 {
-  "reply": "mensaje conversacional corto",
+  "reply": "mensaje conversacional",
   "insights": [
     { "id": "string", "module": "habits|nutrition|gym|finance|routine|goals|mindset|profile|dashboard", "tone": "coach|warning|opportunity", "title": "string", "summary": "string" }
   ],
   "actions": [
-    { "type": "create_habit|log_habit|add_meal|set_water|add_nutrition_rule|create_transaction|update_emergency_fund|create_goal|update_goal_progress|save_journal|save_brian_tracy|create_schedule_event|create_routine|update_profile",
+    {
+      "type": "create_habit|log_habit|add_meal|set_water|add_nutrition_rule|create_transaction|update_emergency_fund|create_goal|update_goal_progress|save_journal|save_brian_tracy|create_schedule_event|create_routine|update_profile",
       "module": "habits|nutrition|gym|finance|routine|goals|mindset|profile",
       "title": "string",
       "reason": "string",
-      "payload": {} }
+      "payload": {}
+    }
   ]
 }
-- Máximo 4 insights y 4 actions.
-- Si faltan datos, responde igual pero con acciones mínimas.
+- Maximo 4 insights y 4 actions.
 `.trim();
 
   const payload = {
     model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
-    temperature: 0.4,
-    response_format: { type: "json_object" },
+    temperature: 0.3,
     messages: [
       { role: "system", content: system },
-      {
-        role: "system",
-        content: `Contexto del usuario:\n${JSON.stringify(context)}`,
-      },
+      { role: "system", content: `Contexto del usuario:\n${JSON.stringify(context)}` },
       ...messages,
     ],
   };
 
-  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Groq error: ${response.status} ${text}`);
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Groq error: ${response.status} ${text}`);
+    }
+
+    const data = await response.json();
+    return tryParseGroqPayload(data?.choices?.[0]?.message?.content);
+  } finally {
+    clearTimeout(timeout);
   }
-
-  const data = await response.json();
-  const content = data?.choices?.[0]?.message?.content;
-  if (typeof content !== "string") return null;
-  const jsonBlock = extractJsonBlock(content);
-  if (!jsonBlock) return null;
-  return JSON.parse(jsonBlock);
 }
 
 async function executeAction(userId: number, action: CopilotAction) {
@@ -722,13 +883,12 @@ async function executeAction(userId: number, action: CopilotAction) {
       return { ok: true, entity: data };
     }
     case "update_profile": {
-      const patch = action.payload;
-      const { data, error } = await supabase.from("users").update(patch).eq("id", userId).select().single();
+      const { data, error } = await supabase.from("users").update(action.payload).eq("id", userId).select().single();
       if (error) throw new Error(error.message);
       return { ok: true, entity: data };
     }
     default:
-      throw new Error("Acción no soportada");
+      throw new Error("Accion no soportada");
   }
 }
 
@@ -743,25 +903,27 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response) => {
         content: String(message.content).slice(0, 2000),
       }));
 
+    const latestUserMessage = [...messages].reverse().find((message) => message.role === "user")?.content || "";
+    if (latestUserMessage && !isLifeOSRelatedQuery(latestUserMessage)) {
+      res.json(buildScopeReply());
+      return;
+    }
+
     const context = await getUserContext(req.userId!);
-    let aiPayload = null;
+    let aiPayload: ParsedGroqPayload | null = null;
 
     try {
       aiPayload = await callGroq(
         messages.length > 0
           ? messages
-          : [
-              {
-                role: "user",
-                content: `Analiza mi sistema en la vista ${activeTab} y dame un diagnóstico corto con acciones ejecutables.`,
-              },
-            ],
+          : [{ role: "user", content: `Analiza mi sistema en la vista ${activeTab} y dame un diagnostico corto con acciones ejecutables.` }],
         context,
       );
     } catch (error) {
       console.error("AI chat error", error);
     }
 
+    const fallback = buildFallbackReply(context, latestUserMessage);
     const insights = Array.isArray(aiPayload?.insights)
       ? aiPayload.insights.slice(0, 4).map((insight: any, index: number) => ({
           id: typeof insight.id === "string" ? insight.id : `insight-${index}`,
@@ -770,16 +932,13 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response) => {
           title: clampText(insight.title || "Insight", 80),
           summary: clampText(insight.summary || "", 220),
         }))
-      : buildFallbackInsights(context);
+      : fallback.insights;
 
     const actions = Array.isArray(aiPayload?.actions)
       ? aiPayload.actions.map(sanitizeAction).filter(Boolean).slice(0, 4)
-      : [];
+      : fallback.actions;
 
-    const reply =
-      typeof aiPayload?.reply === "string" && aiPayload.reply.trim()
-        ? aiPayload.reply.trim()
-        : "Ya analicé tu sistema. Puedo proponerte mejoras y también ejecutarlas dentro de Life OS.";
+    const reply = typeof aiPayload?.reply === "string" && aiPayload.reply.trim() ? aiPayload.reply.trim() : fallback.reply;
 
     res.json({
       reply,
@@ -796,7 +955,7 @@ router.post("/execute", requireAuth, async (req: AuthRequest, res: Response) => 
   try {
     const action = sanitizeAction(req.body?.action);
     if (!action) {
-      res.status(400).json({ message: "Acción inválida" });
+      res.status(400).json({ message: "Accion invalida" });
       return;
     }
 
@@ -808,7 +967,7 @@ router.post("/execute", requireAuth, async (req: AuthRequest, res: Response) => 
       message: action.reason || `${action.title} aplicada correctamente.`,
     });
   } catch (error: any) {
-    res.status(500).json({ message: error?.message || "No fue posible ejecutar la acción" });
+    res.status(500).json({ message: error?.message || "No fue posible ejecutar la accion" });
   }
 });
 
