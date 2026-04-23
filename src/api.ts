@@ -188,4 +188,9 @@ export const api = {
 
   // Edit meal
   updateMeal: (id: string, meal: Partial<Meal>) => put(`/meals/${id}`, meal),
+
+  // AI Copilot
+  aiChat: (data: { messages: Array<{ role: "user" | "assistant"; content: string }>; activeTab?: string }) =>
+    post("/ai/chat", data),
+  aiExecute: (action: Record<string, unknown>) => post("/ai/execute", { action }),
 };

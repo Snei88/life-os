@@ -7,6 +7,8 @@ import Auth from "./components/Auth";
 import { motion, AnimatePresence } from "motion/react";
 import { GuidedTourProvider, useGuidedTour } from "./hooks/useGuidedTour";
 import { useIsCompact } from "./hooks/useIsCompact";
+import { AICopilotProvider } from "./hooks/useAICopilot";
+import { AICopilotWidget } from "./components/AICopilotWidget";
 
 const Dashboard = lazy(() => import("./components/Dashboard"));
 const Habits = lazy(() => import("./components/Habits"));
@@ -35,6 +37,7 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [pendingAction, setPendingAction] = useState<{ tab: string; action?: string } | null>(null);
+  const [contentVersion, setContentVersion] = useState(0);
 
   const handleNavigate = (tab: string, action?: string) => {
     setActiveTab(tab);
@@ -50,6 +53,12 @@ function AppContent() {
     }
     setIsTransitioning(false);
   }, [isCompact, profile?.id]);
+
+  useEffect(() => {
+    const handleRefresh = () => setContentVersion((current) => current + 1);
+    window.addEventListener("lifeos:refresh", handleRefresh);
+    return () => window.removeEventListener("lifeos:refresh", handleRefresh);
+  }, []);
 
   if (loading || isTransitioning) {
     return (
@@ -120,16 +129,20 @@ function AppContent() {
 
   return (
     <GuidedTourProvider userId={profile.id} activeTab={activeTab} setActiveTab={setActiveTab}>
-      <AuthenticatedAppLayout
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        renderContent={() => (
-          <Suspense fallback={<ContentFallback />}>
-            {renderContent()}
-          </Suspense>
-        )}
-        isCompact={isCompact}
-      />
+      <AICopilotProvider activeTab={activeTab}>
+        <AuthenticatedAppLayout
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          handleNavigate={handleNavigate}
+          renderContent={() => (
+            <Suspense fallback={<ContentFallback />}>
+              {renderContent()}
+            </Suspense>
+          )}
+          isCompact={isCompact}
+          contentVersion={contentVersion}
+        />
+      </AICopilotProvider>
     </GuidedTourProvider>
   );
 }
@@ -137,30 +150,37 @@ function AppContent() {
 function AuthenticatedAppLayout({
   activeTab,
   setActiveTab,
+  handleNavigate,
   renderContent,
   isCompact,
+  contentVersion,
 }: {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  handleNavigate: (tab: string, action?: string) => void;
   renderContent: () => React.ReactNode;
   isCompact: boolean;
+  contentVersion: number;
 }) {
   const { isActive } = useGuidedTour();
 
   return (
-    <Layout activeTab={activeTab} setActiveTab={setActiveTab} forceSidebarOpen={isActive}>
-      <AnimatePresence mode={isCompact ? "wait" : "popLayout"} initial={false}>
-        <motion.div
-          key={activeTab}
-          initial={isCompact ? { opacity: 0 } : { opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={isCompact ? { opacity: 0 } : { opacity: 0, x: -20 }}
-          transition={{ duration: isCompact ? 0.18 : 0.3, ease: "easeInOut" }}
-        >
-          {renderContent()}
-        </motion.div>
-      </AnimatePresence>
-    </Layout>
+    <>
+      <Layout activeTab={activeTab} setActiveTab={setActiveTab} forceSidebarOpen={isActive}>
+        <AnimatePresence mode={isCompact ? "wait" : "popLayout"} initial={false}>
+          <motion.div
+            key={`${activeTab}-${contentVersion}`}
+            initial={isCompact ? { opacity: 0 } : { opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={isCompact ? { opacity: 0 } : { opacity: 0, x: -20 }}
+            transition={{ duration: isCompact ? 0.18 : 0.3, ease: "easeInOut" }}
+          >
+            {renderContent()}
+          </motion.div>
+        </AnimatePresence>
+      </Layout>
+      <AICopilotWidget onNavigate={(tab) => handleNavigate(tab)} />
+    </>
   );
 }
 

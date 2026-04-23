@@ -34,6 +34,7 @@ export interface Habit {
   name: string;
   icon: string;
   color: string;
+  reminderTime?: string | null;
   frequency: Frequency;
   category: 'salud' | 'mente' | 'productividad' | 'otros';
   targetStreak: number;
@@ -263,4 +264,33 @@ export interface TransactionCategory {
   color: string;
   icon: string;
   isActive: boolean;
+}
+
+export interface AICopilotInsight {
+  id: string;
+  module: string;
+  tone: "coach" | "warning" | "opportunity";
+  title: string;
+  summary: string;
+}
+
+export interface AICopilotAction {
+  type: string;
+  module: string;
+  title: string;
+  reason?: string;
+  payload: Record<string, unknown>;
+}
+
+export interface AICopilotMessage {
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+}
+
+export interface AICopilotResponse {
+  reply: string;
+  insights: AICopilotInsight[];
+  actions: AICopilotAction[];
+  contextSummary?: Record<string, unknown>;
 }

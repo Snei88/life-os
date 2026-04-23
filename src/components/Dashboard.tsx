@@ -16,6 +16,7 @@ import { useData } from "../hooks/useData";
 import { cn, formatCurrency } from "../lib/utils";
 import { getLogicalDate } from "../lib/dateUtils";
 import type { Habit, Meal, Transaction, Goal, ScheduleEvent, WorkoutSession } from "../types";
+import { AICopilotHero } from "./AICopilotHero";
 
 const WEEK_DAYS = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
 
@@ -230,6 +231,8 @@ const Dashboard: React.FC<{ onNavigate?: (tab: string, action?: string) => void 
       animate="show"
       className="space-y-8 pb-10"
     >
+      <AICopilotHero onNavigate={onNavigate} />
+
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
