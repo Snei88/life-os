@@ -716,9 +716,10 @@ Reglas de formato:
 - Analiza el contexto real del usuario y detecta patrones cruzados entre modulos
 - Usa learningMemory para adaptar sugerencias segun acciones previas
 - Se concreto: patron, consecuencia, mejora
+- El campo "reply" DEBE ser un mensaje completo y autonomo. Nunca lo termines con "...", ":", "ver abajo" o frases inconclusas. Si vas a listar cosas, incluye la lista completa dentro del reply o resume el resultado en una oracion que cierre bien.
 - Devuelve JSON puro con esta forma exacta:
 {
-  "reply": "mensaje conversacional",
+  "reply": "mensaje conversacional completo sin puntos suspensivos al final",
   "insights": [
     { "id": "string", "module": "habits|nutrition|gym|finance|routine|goals|mindset|profile|dashboard", "tone": "coach|warning|opportunity", "title": "string", "summary": "string" }
   ],
@@ -1048,7 +1049,9 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response) => {
       ? aiPayload.actions.map(sanitizeAction).filter(Boolean).slice(0, 4)
       : fallback.actions;
 
-    const reply = typeof aiPayload?.reply === "string" && aiPayload.reply.trim() ? aiPayload.reply.trim() : fallback.reply;
+    const rawReply = typeof aiPayload?.reply === "string" ? aiPayload.reply.trim() : "";
+    const cleanReply = rawReply.replace(/\.*\.{2,}\s*$/, "").replace(/:\s*$/, "").trim();
+    const reply = cleanReply || fallback.reply;
 
     res.json({
       reply,
