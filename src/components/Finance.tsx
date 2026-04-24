@@ -13,6 +13,7 @@ import { useData } from "../hooks/useData";
 import { cn, formatCurrency } from "../lib/utils";
 import { getLogicalDate } from "../lib/dateUtils";
 import type { Transaction, FinanceStats } from "../types";
+import { AIModuleStrip } from "./AIModuleStrip";
 
 // Categorías predefinidas por tipo
 const INCOME_CATEGORIES = ["Freelance", "Salario", "Inversiones", "Bonos", "Otros"];
@@ -241,6 +242,17 @@ const Finance: React.FC = () => {
           <Plus size={20} />Nueva Transacción
         </button>
       </div>
+
+      <AIModuleStrip
+        moduleId="finance"
+        title="Finanzas"
+        subtitle="La IA puede detectar fugas, proponer recortes, convertir riesgos en metas y ayudarte a ejecutar cambios."
+        prompts={[
+          "Analiza mis gastos y dime donde estoy perdiendo dinero.",
+          "Proponme un ajuste financiero aplicable hoy.",
+          "Convierte mi problema financiero principal en una accion dentro del sistema.",
+        ]}
+      />
 
       {/* KPIs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

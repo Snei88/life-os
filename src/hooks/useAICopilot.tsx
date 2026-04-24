@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 import { api } from "../api";
 import type { AICopilotAction, AICopilotInsight, AICopilotMessage } from "../types";
 
+const COPILOT_STORAGE_KEY = "lifeos_copilot_memory_v1";
+
 type AICopilotContextValue = {
   isOpen: boolean;
   loading: boolean;
@@ -31,6 +33,33 @@ export function AICopilotProvider({
   const [messages, setMessages] = useState<AICopilotMessage[]>([]);
   const [insights, setInsights] = useState<AICopilotInsight[]>([]);
   const [actions, setActions] = useState<AICopilotAction[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(COPILOT_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed?.messages)) setMessages(parsed.messages.slice(-30));
+      if (Array.isArray(parsed?.insights)) setInsights(parsed.insights.slice(0, 6));
+      if (Array.isArray(parsed?.actions)) setActions(parsed.actions.slice(0, 6));
+    } catch {
+      return;
+    } finally {
+      setHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      COPILOT_STORAGE_KEY,
+      JSON.stringify({
+        messages: messages.slice(-30),
+        insights: insights.slice(0, 6),
+        actions: actions.slice(0, 6),
+      }),
+    );
+  }, [messages, insights, actions]);
 
   const applyResponse = (reply: string, nextInsights: AICopilotInsight[], nextActions: AICopilotAction[]) => {
     setMessages((current) => [
@@ -72,7 +101,7 @@ export function AICopilotProvider({
     };
 
     const nextConversation = [...messages, nextUserMessage];
-    setMessages(nextConversation);
+    setMessages(nextConversation.slice(-30));
     setLoading(true);
 
     try {
@@ -124,10 +153,10 @@ export function AICopilotProvider({
   };
 
   useEffect(() => {
-    if (messages.length === 0) {
+    if (hydrated && messages.length === 0) {
       void refreshAnalysis();
     }
-  }, []);
+  }, [hydrated, messages.length]);
 
   const value = useMemo<AICopilotContextValue>(
     () => ({

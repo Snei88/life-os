@@ -7,6 +7,7 @@ import { useData } from "../hooks/useData";
 import { useIsCompact } from "../hooks/useIsCompact";
 import { cn, getDayName } from "../lib/utils";
 import { ScheduleEvent } from "../types";
+import { AIModuleStrip } from "./AIModuleStrip";
 
 // ─── constants ────────────────────────────────────────────────────────────────
 
@@ -601,6 +602,17 @@ const Routine: React.FC = () => {
           </button>
         </div>
       </div>
+
+      <AIModuleStrip
+        moduleId="routine"
+        title="Rutina"
+        subtitle="La IA puede detectar choques, huecos de enfoque y ayudarte a reordenar tu semana dentro del sistema."
+        prompts={[
+          "Analiza mi rutina y dime que patron ves.",
+          "Detecta huecos o conflictos en mi agenda.",
+          "Proponme un bloque nuevo para mejorar enfoque.",
+        ]}
+      />
 
       {view === "today" && (
         <TodayTimeline

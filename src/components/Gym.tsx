@@ -12,6 +12,7 @@ import { useTheme } from "../hooks/useTheme";
 import { cn } from "../lib/utils";
 import { getLogicalDate } from "../lib/dateUtils";
 import type { WorkoutRoutine, WorkoutSession, SessionExercise, GymStats } from "../types";
+import { AIModuleStrip } from "./AIModuleStrip";
 
 const Gym: React.FC = () => {
   const { refresh } = useData();
@@ -311,6 +312,17 @@ const Gym: React.FC = () => {
           </button>
         )}
       </div>
+
+      <AIModuleStrip
+        moduleId="gym"
+        title="Gym"
+        subtitle="La IA puede leer tus rutinas, sesiones y rachas para proponerte progresion o correccion dentro del sistema."
+        prompts={[
+          "Analiza mi progreso en gym y dime que patron ves.",
+          "Proponme una mejora real para mi rutina.",
+          "Detecta si estoy perdiendo consistencia en entrenamiento.",
+        ]}
+      />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">

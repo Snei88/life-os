@@ -10,6 +10,7 @@ import { useData } from "../hooks/useData";
 import { useIsCompact } from "../hooks/useIsCompact";
 import { cn } from "../lib/utils";
 import { Goal } from "../types";
+import { AIModuleStrip } from "./AIModuleStrip";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -537,6 +538,17 @@ const Goals: React.FC<GoalsProps> = ({ openGoalModal, onGoalModalOpened }) => {
           <Plus size={18} />Nueva Meta
         </button>
       </div>
+
+      <AIModuleStrip
+        moduleId="goals"
+        title="Metas"
+        subtitle="La IA puede detectar metas difusas, aterrizarlas a ejecucion y conectarlas con tus otros modulos."
+        prompts={[
+          "Analiza mis metas y dime cual esta mal definida.",
+          "Convierte mis metas en pasos semanales accionables.",
+          "Detecta que meta esta frenando mi sistema.",
+        ]}
+      />
 
       {/* Stats strip */}
       {goals.length > 0 && (

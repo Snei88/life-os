@@ -57,7 +57,7 @@ export function AICopilotWidget({
             initial={{ opacity: 0, y: 16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
-            className="fixed bottom-24 right-2 z-[60] flex h-[min(82vh,760px)] w-[min(440px,calc(100vw-1rem))] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b0b0b] shadow-2xl md:right-4"
+            className="fixed bottom-24 right-2 z-[60] flex h-[min(88vh,860px)] w-[min(540px,calc(100vw-1rem))] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b0b0b] shadow-2xl md:right-4"
           >
             <div className="shrink-0 border-b border-white/10 bg-linear-to-r from-orange-500/15 via-red-500/10 to-transparent p-4">
               <div className="flex items-start justify-between gap-3">

@@ -195,6 +195,14 @@ function normalizeText(value: string) {
 function isLifeOSRelatedQuery(message: string) {
   const text = normalizeText(message);
   const allowedKeywords = [
+    "hola",
+    "buenas",
+    "hey",
+    "que puedes hacer",
+    "en que me puedes ayudar",
+    "ayuda",
+    "quien eres",
+    "gracias",
     "habit",
     "disciplina",
     "rutina",

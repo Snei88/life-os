@@ -15,6 +15,7 @@ import { useIsCompact } from "../hooks/useIsCompact";
 import { cn } from "../lib/utils";
 import { getLogicalDate } from "../lib/dateUtils";
 import { Meal, FoodItem, NutritionRule } from "../types";
+import { AIModuleStrip } from "./AIModuleStrip";
 
 // ─── tipos locales ─────────────────────────────────────────────────────────────
 type MealType = "breakfast" | "lunch" | "dinner" | "snack";
@@ -599,6 +600,17 @@ const Nutrition: React.FC<NutritionProps> = ({ openMealModal, onMealModalOpened 
           </button>
         </div>
       </div>
+
+      <AIModuleStrip
+        moduleId="nutrition"
+        title="Nutricion"
+        subtitle="La IA puede leer tus calorias, proteina, agua y reglas nutricionales para proponerte ajustes visibles."
+        prompts={[
+          "Analiza mi nutricion y dime que patron ves.",
+          "Proponme un ajuste nutricional aplicable hoy.",
+          "Detecta mi error principal de comida o agua.",
+        ]}
+      />
 
       {/* Panel superior */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

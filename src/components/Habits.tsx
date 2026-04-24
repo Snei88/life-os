@@ -15,6 +15,7 @@ import { cn } from "../lib/utils";
 import { getLogicalDate } from "../lib/dateUtils";
 import { useIsCompact } from "../hooks/useIsCompact";
 import type { Habit, HabitStats, Frequency } from "../types";
+import { AIModuleStrip } from "./AIModuleStrip";
 
 const CATEGORIES = {
   salud: { label: 'Salud', icon: Heart, color: 'text-red-500', bg: 'bg-red-500/10' },
@@ -349,6 +350,17 @@ const Habits: React.FC = () => {
           </button>
         </div>
       </div>
+
+      <AIModuleStrip
+        moduleId="habits"
+        title="Habitos"
+        subtitle="La IA puede leer tus patrones de consistencia, detectar friccion y proponerte ajustes ejecutables."
+        prompts={[
+          "Analiza mis habitos y dime donde estoy fallando.",
+          "Proponme un habito ancla para mejorar disciplina.",
+          "Dime que cambio haria mis habitos mas sostenibles.",
+        ]}
+      />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
