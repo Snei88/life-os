@@ -192,48 +192,51 @@ function normalizeText(value: string) {
     .toLowerCase();
 }
 
-function isLifeOSRelatedQuery(message: string) {
+function isGreetingOrCapabilityQuery(message: string) {
   const text = normalizeText(message);
-  const allowedKeywords = [
+  const friendlyKeywords = [
     "hola",
     "buenas",
     "hey",
+    "hello",
+    "holi",
+    "como vas",
+    "como estas",
+    "saludos",
+    "que haces",
+    "que puede hacer",
     "que puedes hacer",
     "en que me puedes ayudar",
+    "en que puedes ayudar",
     "ayuda",
     "quien eres",
     "gracias",
-    "habit",
-    "disciplina",
-    "rutina",
-    "agenda",
-    "caloria",
-    "proteina",
-    "comida",
-    "nutric",
-    "finanza",
-    "gasto",
-    "ahorro",
-    "emergencia",
-    "gym",
-    "entren",
-    "workout",
-    "meta",
-    "goal",
-    "mindset",
-    "journal",
-    "gratitud",
-    "afirm",
-    "life os",
-    "modulo",
-    "perfil",
-    "productividad",
-    "crecimiento",
-    "personal",
-    "sistema",
   ];
 
-  return allowedKeywords.some((keyword) => text.includes(keyword));
+  return friendlyKeywords.some((keyword) => text.includes(keyword));
+}
+
+function isClearlyOutsideScope(message: string) {
+  const text = normalizeText(message);
+  const outsidePatterns = [
+    "formula matemat",
+    "ecuacion",
+    "integral",
+    "derivada",
+    "matriz",
+    "fisica cuantica",
+    "quimica organica",
+    "programame un juego",
+    "escribeme codigo",
+    "capital de",
+    "traduce al ingles",
+    "poema",
+    "cancion",
+    "astrologia",
+    "horoscopo",
+  ];
+
+  return outsidePatterns.some((pattern) => text.includes(pattern));
 }
 
 function buildScopeReply() {
@@ -247,6 +250,23 @@ function buildScopeReply() {
         tone: "warning" as const,
         title: "Consulta fuera de contexto",
         summary: "Conecta la pregunta con tus 8 modulos o con una mejora dentro de Life OS.",
+      },
+    ],
+    actions: [],
+  };
+}
+
+function buildFriendlyReply() {
+  return {
+    reply:
+      "Puedo ayudarte a leer tus datos, detectar patrones entre tus modulos, proponerte mejoras y ejecutar cambios reales dentro de Life OS. Por ejemplo: habitos, nutricion, gym, finanzas, rutina, metas, mindset y perfil.",
+    insights: [
+      {
+        id: "friendly-help",
+        module: "dashboard",
+        tone: "opportunity" as const,
+        title: "Asistencia disponible",
+        summary: "Puedes pedirme diagnosticos, mejoras para hoy, acciones automaticas, ajustes por modulo o cambios concretos dentro del sistema.",
       },
     ],
     actions: [],
@@ -515,6 +535,83 @@ function buildFallbackReply(context: Awaited<ReturnType<typeof getUserContext>>,
   const parts: string[] = [];
   const { habitsToday, nutritionToday, financeMonth, goals, gym } = context.summary;
   const target = Number(context.profile?.gymTargetKcal || 0);
+
+  if (!latestMessage.trim()) {
+    return {
+      reply: "Ya revise tu sistema. Si quieres, te doy un diagnostico, te digo tu modulo mas debil o te propongo cambios automaticos para hoy.",
+      insights: buildFallbackInsights(context),
+      actions: [],
+    };
+  }
+
+  if (isGreetingOrCapabilityQuery(latestMessage)) {
+    return {
+      reply:
+        "Puedo analizar tus datos, detectar patrones entre modulos, proponerte mejoras para hoy y ejecutar cambios reales en habitos, nutricion, gym, finanzas, rutina, metas, mindset y perfil. Si quieres, empiezo con un diagnostico general o con el modulo que mas te preocupe.",
+      insights: buildFallbackInsights(context),
+      actions: [],
+    };
+  }
+
+  if (latest.includes("mejora") || latest.includes("automatic") || latest.includes("hoy")) {
+    const actions: CopilotAction[] = [];
+    if (habitsToday.total > 0 && habitsToday.completed < habitsToday.total) {
+      actions.push({
+        type: "create_goal",
+        module: "goals",
+        title: "Crear meta de consistencia semanal",
+        reason: "Tus habitos de hoy estan flojos y conviene volver la disciplina visible.",
+        payload: {
+          title: "Subir consistencia de habitos esta semana",
+          description: "Meta sugerida por la IA para ordenar tu ejecucion diaria.",
+          level: "90d",
+          category: "Personal",
+          priority: "Alta",
+          progress: 0,
+        },
+      });
+    }
+    if (nutritionToday.meals === 0) {
+      actions.push({
+        type: "add_meal",
+        module: "nutrition",
+        title: "Agregar comida base para hoy",
+        reason: "No hay comidas registradas y eso apaga el modulo nutricional.",
+        payload: {
+          date: context.today,
+          name: "Comida base sugerida por IA",
+          calories: 550,
+          protein: 35,
+          carbs: 55,
+          fat: 18,
+          mealType: "lunch",
+        },
+      });
+    }
+    if (financeMonth.balance < 0) {
+      actions.push({
+        type: "create_goal",
+        module: "goals",
+        title: "Crear meta de control de gastos",
+        reason: "Tu balance mensual necesita una correccion visible.",
+        payload: {
+          title: "Recuperar balance financiero del mes",
+          description: "Meta automatica sugerida para corregir el desorden financiero.",
+          level: "90d",
+          category: "Financiero",
+          priority: "Alta",
+          progress: 0,
+        },
+      });
+    }
+
+    return {
+      reply:
+        "Estas son las mejoras automaticas que tienen mas sentido hoy: reforzar disciplina, reactivar nutricion y volver visible cualquier desorden financiero. Te deje acciones concretas para aplicarlas desde el sistema.",
+      insights: buildFallbackInsights(context),
+      actions: actions.slice(0, 4),
+    };
+  }
 
   if (latest.includes("patron") || latest.includes("analiza") || latest.includes("diagnost")) {
     if (habitsToday.total > 0 && habitsToday.completed < habitsToday.total) {
@@ -914,8 +1011,13 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response) => {
       }));
 
     const latestUserMessage = [...messages].reverse().find((message) => message.role === "user")?.content || "";
-    if (latestUserMessage && !isLifeOSRelatedQuery(latestUserMessage)) {
+    if (latestUserMessage && isClearlyOutsideScope(latestUserMessage)) {
       res.json(buildScopeReply());
+      return;
+    }
+
+    if (latestUserMessage && isGreetingOrCapabilityQuery(latestUserMessage)) {
+      res.json(buildFriendlyReply());
       return;
     }
 
