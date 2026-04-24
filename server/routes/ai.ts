@@ -194,26 +194,25 @@ function normalizeText(value: string) {
 
 function isGreetingOrCapabilityQuery(message: string) {
   const text = normalizeText(message);
-  const friendlyKeywords = [
-    "hola",
-    "buenas",
-    "hey",
-    "hello",
-    "holi",
+  // Multi-word phrases use includes; single words use word boundaries to avoid partial matches
+  const phraseKeywords = [
     "como vas",
     "como estas",
-    "saludos",
     "que haces",
     "que puede hacer",
     "que puedes hacer",
     "en que me puedes ayudar",
     "en que puedes ayudar",
-    "ayuda",
     "quien eres",
-    "gracias",
+    "para que sirves",
+    "como funcionas",
   ];
+  const wordKeywords = ["hola", "buenas", "hey", "hello", "holi", "saludos", "gracias"];
 
-  return friendlyKeywords.some((keyword) => text.includes(keyword));
+  return (
+    phraseKeywords.some((kw) => text.includes(kw)) ||
+    wordKeywords.some((kw) => new RegExp(`\\b${kw}\\b`).test(text))
+  );
 }
 
 function isClearlyOutsideScope(message: string) {
@@ -737,7 +736,7 @@ Reglas de formato:
 `.trim();
 
   const payload = {
-    model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
+    model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
     temperature: 0.3,
     messages: [
       { role: "system", content: system },
