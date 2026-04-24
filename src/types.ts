@@ -282,6 +282,14 @@ export interface AICopilotAction {
   payload: Record<string, unknown>;
 }
 
+export interface AICopilotFeedbackEntry {
+  actionTitle: string;
+  actionType: string;
+  module: string;
+  outcome: "accepted" | "postponed" | "dismissed";
+  createdAt: string;
+}
+
 export interface AICopilotMessage {
   role: "user" | "assistant";
   content: string;

@@ -19,7 +19,7 @@ interface AIRecommendationsProps {
 }
 
 export const AIRecommendations: React.FC<AIRecommendationsProps> = ({ onNavigate }) => {
-  const { messages, insights, actions, sendMessage, executeAction, refreshAnalysis, loading, executingAction } = useAICopilot();
+  const { messages, insights, actions, sendMessage, executeAction, postponeAction, dismissAction, refreshAnalysis, loading, executingAction } = useAICopilot();
   const [input, setInput] = useState("");
 
   const handleSend = async () => {
@@ -122,6 +122,20 @@ export const AIRecommendations: React.FC<AIRecommendationsProps> = ({ onNavigate
                     >
                       {executingAction === action.title ? "Aplicando..." : "Aplicar cambio"}
                     </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => postponeAction(action)}
+                        className="rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-white/60"
+                      >
+                        Posponer
+                      </button>
+                      <button
+                        onClick={() => dismissAction(action)}
+                        className="rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-white/60"
+                      >
+                        Descartar
+                      </button>
+                    </div>
                     <button
                       onClick={() => {
                         const tab = moduleTabMap[action.module];

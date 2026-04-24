@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { api } from "../api";
-import type { AICopilotAction, AICopilotInsight, AICopilotMessage } from "../types";
+import type { AICopilotAction, AICopilotFeedbackEntry, AICopilotInsight, AICopilotMessage } from "../types";
 
 const COPILOT_STORAGE_KEY = "lifeos_copilot_memory_v1";
+const COPILOT_LEARNING_KEY = "lifeos_copilot_learning_v1";
 
 type AICopilotContextValue = {
   isOpen: boolean;
@@ -11,11 +12,14 @@ type AICopilotContextValue = {
   messages: AICopilotMessage[];
   insights: AICopilotInsight[];
   actions: AICopilotAction[];
+  feedback: AICopilotFeedbackEntry[];
   toggleOpen: () => void;
   setOpen: (value: boolean) => void;
   sendMessage: (content: string) => Promise<void>;
   refreshAnalysis: () => Promise<void>;
   executeAction: (action: AICopilotAction) => Promise<void>;
+  postponeAction: (action: AICopilotAction) => void;
+  dismissAction: (action: AICopilotAction) => void;
 };
 
 const AICopilotContext = createContext<AICopilotContextValue | null>(null);
@@ -33,6 +37,7 @@ export function AICopilotProvider({
   const [messages, setMessages] = useState<AICopilotMessage[]>([]);
   const [insights, setInsights] = useState<AICopilotInsight[]>([]);
   const [actions, setActions] = useState<AICopilotAction[]>([]);
+  const [feedback, setFeedback] = useState<AICopilotFeedbackEntry[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -43,6 +48,12 @@ export function AICopilotProvider({
       if (Array.isArray(parsed?.messages)) setMessages(parsed.messages.slice(-30));
       if (Array.isArray(parsed?.insights)) setInsights(parsed.insights.slice(0, 6));
       if (Array.isArray(parsed?.actions)) setActions(parsed.actions.slice(0, 6));
+
+      const learningRaw = localStorage.getItem(COPILOT_LEARNING_KEY);
+      if (learningRaw) {
+        const learningParsed = JSON.parse(learningRaw);
+        if (Array.isArray(learningParsed)) setFeedback(learningParsed.slice(-40));
+      }
     } catch {
       return;
     } finally {
@@ -61,6 +72,29 @@ export function AICopilotProvider({
     );
   }, [messages, insights, actions]);
 
+  useEffect(() => {
+    localStorage.setItem(COPILOT_LEARNING_KEY, JSON.stringify(feedback.slice(-40)));
+  }, [feedback]);
+
+  const buildLearningMemory = () => ({
+    acceptedActions: feedback.filter((entry) => entry.outcome === "accepted").slice(-12),
+    postponedActions: feedback.filter((entry) => entry.outcome === "postponed").slice(-12),
+    dismissedActions: feedback.filter((entry) => entry.outcome === "dismissed").slice(-12),
+  });
+
+  const registerFeedback = (action: AICopilotAction, outcome: AICopilotFeedbackEntry["outcome"]) => {
+    setFeedback((current) => [
+      ...current.slice(-39),
+      {
+        actionTitle: action.title,
+        actionType: action.type,
+        module: action.module,
+        outcome,
+        createdAt: new Date().toISOString(),
+      },
+    ]);
+  };
+
   const applyResponse = (reply: string, nextInsights: AICopilotInsight[], nextActions: AICopilotAction[]) => {
     setMessages((current) => [
       ...current,
@@ -77,7 +111,7 @@ export function AICopilotProvider({
   const refreshAnalysis = async () => {
     setLoading(true);
     try {
-      const response = await api.aiChat({ messages: [], activeTab });
+      const response = await api.aiChat({ messages: [], activeTab, learningMemory: buildLearningMemory() });
       applyResponse(response.reply, response.insights || [], response.actions || []);
     } catch (error) {
       setMessages((current) => [
@@ -108,6 +142,7 @@ export function AICopilotProvider({
       const response = await api.aiChat({
         messages: nextConversation.map((message) => ({ role: message.role, content: message.content })),
         activeTab,
+        learningMemory: buildLearningMemory(),
       });
       applyResponse(response.reply, response.insights || [], response.actions || []);
     } catch (error) {
@@ -128,6 +163,7 @@ export function AICopilotProvider({
     setExecutingAction(action.title);
     try {
       const response = await api.aiExecute(action as unknown as Record<string, unknown>);
+      registerFeedback(action, "accepted");
       setMessages((current) => [
         ...current,
         {
@@ -152,6 +188,32 @@ export function AICopilotProvider({
     }
   };
 
+  const postponeAction = (action: AICopilotAction) => {
+    registerFeedback(action, "postponed");
+    setActions((current) => current.filter((candidate) => candidate !== action));
+    setMessages((current) => [
+      ...current,
+      {
+        role: "assistant",
+        content: `Dejé pendiente "${action.title}". Lo tendré en cuenta para sugerirlo en un mejor momento.`,
+        createdAt: new Date().toISOString(),
+      },
+    ]);
+  };
+
+  const dismissAction = (action: AICopilotAction) => {
+    registerFeedback(action, "dismissed");
+    setActions((current) => current.filter((candidate) => candidate !== action));
+    setMessages((current) => [
+      ...current,
+      {
+        role: "assistant",
+        content: `Entendido. No priorizaré "${action.title}" de la misma forma en las próximas sugerencias.`,
+        createdAt: new Date().toISOString(),
+      },
+    ]);
+  };
+
   useEffect(() => {
     if (hydrated && messages.length === 0) {
       void refreshAnalysis();
@@ -166,13 +228,16 @@ export function AICopilotProvider({
       messages,
       insights,
       actions,
+      feedback,
       toggleOpen: () => setIsOpen((current) => !current),
       setOpen: setIsOpen,
       sendMessage,
       refreshAnalysis,
       executeAction,
+      postponeAction,
+      dismissAction,
     }),
-    [isOpen, loading, executingAction, messages, insights, actions, activeTab],
+    [isOpen, loading, executingAction, messages, insights, actions, feedback, activeTab],
   );
 
   return <AICopilotContext.Provider value={value}>{children}</AICopilotContext.Provider>;

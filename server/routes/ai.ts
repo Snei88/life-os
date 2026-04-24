@@ -618,6 +618,7 @@ Reglas:
 - Si el usuario pregunta algo fuera de ese alcance, rechaza la consulta con una frase corta y deja claro que solo trabajas dentro de Life OS.
 - Responde en espanol.
 - Analiza el contexto real del usuario y detecta patrones cruzados.
+- Usa learningMemory para adaptar sugerencias segun acciones aceptadas, pospuestas o descartadas anteriormente.
 - Se concreto: patron, consecuencia, mejora.
 - Si propones acciones, deben ser seguras y ejecutables dentro del sistema.
 - Devuelve JSON puro con esta forma:
@@ -904,6 +905,7 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const incomingMessages = Array.isArray(req.body?.messages) ? req.body.messages : [];
     const activeTab = typeof req.body?.activeTab === "string" ? req.body.activeTab : "dashboard";
+    const learningMemory = req.body?.learningMemory && typeof req.body.learningMemory === "object" ? req.body.learningMemory : {};
     const messages: ChatMessage[] = incomingMessages
       .filter((message: any) => message && typeof message.role === "string" && typeof message.content === "string")
       .map((message: any) => ({
@@ -918,6 +920,11 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response) => {
     }
 
     const context = await getUserContext(req.userId!);
+    const enhancedContext = {
+      ...context,
+      activeTab,
+      learningMemory,
+    };
     let aiPayload: ParsedGroqPayload | null = null;
 
     try {
@@ -925,13 +932,13 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response) => {
         messages.length > 0
           ? messages
           : [{ role: "user", content: `Analiza mi sistema en la vista ${activeTab} y dame un diagnostico corto con acciones ejecutables.` }],
-        context,
+        enhancedContext,
       );
     } catch (error) {
       console.error("AI chat error", error);
     }
 
-    const fallback = buildFallbackReply(context, latestUserMessage);
+    const fallback = buildFallbackReply(enhancedContext, latestUserMessage);
     const insights = Array.isArray(aiPayload?.insights)
       ? aiPayload.insights.slice(0, 4).map((insight: any, index: number) => ({
           id: typeof insight.id === "string" ? insight.id : `insight-${index}`,

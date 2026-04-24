@@ -19,7 +19,7 @@ export function AICopilotHero({
 }: {
   onNavigate?: (tab: string, action?: string) => void;
 }) {
-  const { insights, actions, setOpen, sendMessage, executeAction, executingAction } = useAICopilot();
+  const { insights, actions, setOpen, sendMessage, executeAction, postponeAction, dismissAction, executingAction } = useAICopilot();
   const primaryInsight = insights[0];
 
   return (
@@ -81,6 +81,20 @@ export function AICopilotHero({
                   className="rounded-xl bg-white px-3 py-2 text-xs font-bold text-black disabled:opacity-50"
                 >
                   {executingAction === action.title ? "Aplicando..." : "Ejecutar"}
+                </button>
+              </div>
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() => postponeAction(action)}
+                  className="rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-white/60 hover:bg-white/5"
+                >
+                  Posponer
+                </button>
+                <button
+                  onClick={() => dismissAction(action)}
+                  className="rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-white/60 hover:bg-white/5"
+                >
+                  Descartar
                 </button>
               </div>
               <button

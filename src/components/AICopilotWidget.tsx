@@ -20,7 +20,7 @@ export function AICopilotWidget({
 }: {
   onNavigate: (tab: string) => void;
 }) {
-  const { isOpen, toggleOpen, loading, executingAction, messages, insights, actions, sendMessage, executeAction, refreshAnalysis } =
+  const { isOpen, toggleOpen, loading, executingAction, messages, insights, actions, sendMessage, executeAction, postponeAction, dismissAction, refreshAnalysis } =
     useAICopilot();
   const [input, setInput] = useState("");
   const [showInsights, setShowInsights] = useState(false);
@@ -150,6 +150,20 @@ export function AICopilotWidget({
                             className="rounded-xl bg-orange-600 px-3 py-2 text-xs font-bold text-white hover:bg-orange-700 disabled:opacity-50"
                           >
                             {executingAction === action.title ? "Aplicando..." : "Aplicar"}
+                          </button>
+                        </div>
+                        <div className="mt-3 flex gap-2">
+                          <button
+                            onClick={() => postponeAction(action)}
+                            className="rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-white/60 hover:bg-white/5"
+                          >
+                            Posponer
+                          </button>
+                          <button
+                            onClick={() => dismissAction(action)}
+                            className="rounded-xl border border-white/10 px-3 py-2 text-[11px] font-bold text-white/60 hover:bg-white/5"
+                          >
+                            Descartar
                           </button>
                         </div>
                       </div>
