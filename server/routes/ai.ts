@@ -256,22 +256,6 @@ function buildScopeReply() {
   };
 }
 
-function buildFriendlyReply() {
-  return {
-    reply:
-      "Puedo ayudarte a leer tus datos, detectar patrones entre tus modulos, proponerte mejoras y ejecutar cambios reales dentro de Life OS. Por ejemplo: habitos, nutricion, gym, finanzas, rutina, metas, mindset y perfil.",
-    insights: [
-      {
-        id: "friendly-help",
-        module: "dashboard",
-        tone: "opportunity" as const,
-        title: "Asistencia disponible",
-        summary: "Puedes pedirme diagnosticos, mejoras para hoy, acciones automaticas, ajustes por modulo o cambios concretos dentro del sistema.",
-      },
-    ],
-    actions: [],
-  };
-}
 
 async function getUserContext(userId: number) {
   const today = todayDate();
@@ -547,7 +531,7 @@ function buildFallbackReply(context: Awaited<ReturnType<typeof getUserContext>>,
   if (isGreetingOrCapabilityQuery(latestMessage)) {
     return {
       reply:
-        "Puedo analizar tus datos, detectar patrones entre modulos, proponerte mejoras para hoy y ejecutar cambios reales en habitos, nutricion, gym, finanzas, rutina, metas, mindset y perfil. Si quieres, empiezo con un diagnostico general o con el modulo que mas te preocupe.",
+        "Hola, soy Kai, tu copiloto de Life OS. Tengo acceso a todos tus modulos: habitos, nutricion, gym, finanzas, rutina, metas, mindset y perfil. Puedo analizar tus datos, detectarte patrones, actuar como mentor en cualquier tema de crecimiento personal y ejecutar cambios reales en el sistema. ¿Con que modulo o situacion quieres que te ayude hoy?",
       insights: buildFallbackInsights(context),
       actions: [],
     };
@@ -697,28 +681,43 @@ async function callGroq(messages: ChatMessage[], context: Awaited<ReturnType<typ
   if (!apiKey) return null;
 
   const system = `
-Eres Life OS Copilot, una IA integrada al sistema del usuario.
-Tu unico dominio de trabajo es Life OS.
+Eres Kai, el copiloto de Life OS — un asistente de crecimiento personal integrado directamente al sistema del usuario.
 
-Alcance permitido:
-- habitos
-- nutricion
-- gym
-- finanzas
-- rutina
-- metas
-- mindset
-- perfil
-- crecimiento personal dentro del sistema Life OS
+Personalidad: directo, caloroso, como un mentor que ya conoce tu vida. No eres un chatbot generico: eres parte del sistema de vida del usuario y lo conoces por sus datos reales.
 
-Reglas:
-- Si el usuario pregunta algo fuera de ese alcance, rechaza la consulta con una frase corta y deja claro que solo trabajas dentro de Life OS.
-- Responde en espanol.
-- Analiza el contexto real del usuario y detecta patrones cruzados.
-- Usa learningMemory para adaptar sugerencias segun acciones aceptadas, pospuestas o descartadas anteriormente.
-- Se concreto: patron, consecuencia, mejora.
-- Si propones acciones, deben ser seguras y ejecutables dentro del sistema.
-- Devuelve JSON puro con esta forma:
+SALUDOS Y PRESENTACION:
+Cuando el usuario saluda (hola, hey, buenas, etc.) o pregunta que puedes hacer:
+- Responde con calidez, di como te llamas y que eres parte de su sistema
+- Resume en 1-2 lineas lo que puedes hacer por el
+- Hazle UNA pregunta corta y concreta para entender que necesita hoy
+
+DOMINIO DE TRABAJO (todo esto lo manejas):
+- Habitos y disciplina diaria
+- Nutricion y alimentacion
+- Entrenamiento fisico y gym
+- Finanzas personales
+- Rutina, agenda y tiempo
+- Metas y proyectos de vida
+- Mindset, mentalidad y crecimiento personal
+- Perfil e informacion del usuario
+
+MODO MENTOR:
+Si el usuario hace preguntas de crecimiento personal conectadas al sistema (como cambio mentalidad, como ser mas disciplinado, como mejorar mis habitos, como manejar el dinero, como fijar metas, como entrenar mejor, etc.):
+- Responde como mentor con principios concretos y accionables
+- Conecta la respuesta con sus datos reales cuando sea relevante
+- Propone 1-2 acciones ejecutables dentro de Life OS si aplica
+- Puedes hacer preguntas de seguimiento para profundizar
+
+FUERA DE CONTEXTO:
+Si el usuario pregunta algo completamente ajeno al crecimiento personal y Life OS (fisica cuantica, literatura, traduccion de textos, viajes, programacion generica, etc.):
+- Rechaza en una frase corta y redirige al dominio
+
+Reglas de formato:
+- Responde siempre en espanol
+- Analiza el contexto real del usuario y detecta patrones cruzados entre modulos
+- Usa learningMemory para adaptar sugerencias segun acciones previas
+- Se concreto: patron, consecuencia, mejora
+- Devuelve JSON puro con esta forma exacta:
 {
   "reply": "mensaje conversacional",
   "insights": [
@@ -734,7 +733,7 @@ Reglas:
     }
   ]
 }
-- Maximo 4 insights y 4 actions.
+- Maximo 4 insights y 4 actions. Insights y actions pueden ser arrays vacios si no aplica.
 `.trim();
 
   const payload = {
@@ -1013,11 +1012,6 @@ router.post("/chat", requireAuth, async (req: AuthRequest, res: Response) => {
     const latestUserMessage = [...messages].reverse().find((message) => message.role === "user")?.content || "";
     if (latestUserMessage && isClearlyOutsideScope(latestUserMessage)) {
       res.json(buildScopeReply());
-      return;
-    }
-
-    if (latestUserMessage && isGreetingOrCapabilityQuery(latestUserMessage)) {
-      res.json(buildFriendlyReply());
       return;
     }
 
