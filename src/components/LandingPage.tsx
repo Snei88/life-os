@@ -1,10 +1,17 @@
 import React, { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from "motion/react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useInView,
+  AnimatePresence,
+} from "motion/react";
 import {
   ArrowRight,
   CalendarDays,
   CheckCircle2,
-  ChevronRight,
+  ChevronDown,
   Download,
   Dumbbell,
   Flag,
@@ -12,10 +19,8 @@ import {
   LockKeyhole,
   Menu,
   Moon,
-  Play,
   ShieldCheck,
   Smartphone,
-  Sparkles,
   Target,
   TimerReset,
   Wallet,
@@ -26,15 +31,14 @@ import {
   BarChart3,
   ArrowUpRight,
   Star,
-  ChevronDown,
   Activity,
-  Flame,
   Droplets,
   PiggyBank,
   Eye,
   Layers,
   Clock,
-  Check
+  Check,
+  ChevronRight,
 } from "lucide-react";
 import iconLight from "../../assets/icono.png";
 import { cn } from "../lib/utils";
@@ -43,16 +47,47 @@ type LandingPageProps = {
   onAccess: () => void;
 };
 
-const DOWNLOAD_URL = "https://www.mediafire.com/file/vrnayutsilmxu3t/LifeOS.apk/file";
+const DOWNLOAD_URL =
+  "https://www.mediafire.com/file/vrnayutsilmxu3t/LifeOS.apk/file";
 
-// ─── DATA ─────────────────────────────────────────────────────────────
+// ─── DATA ──────────────────────────────────────────────────────────────────────
 
 const modules = [
-  { label: "Rutina", icon: CalendarDays, value: "Semana base", color: "text-blue-600", bg: "bg-gradient-to-br from-blue-500 to-blue-600", accent: "from-blue-500/20 to-transparent" },
-  { label: "Salud", icon: HeartPulse, value: "Sueño 7.5h", color: "text-emerald-600", bg: "bg-gradient-to-br from-emerald-500 to-emerald-600", accent: "from-emerald-500/20 to-transparent" },
-  { label: "Gym", icon: Dumbbell, value: "4 sesiones", color: "text-orange-600", bg: "bg-gradient-to-br from-orange-500 to-orange-600", accent: "from-orange-500/20 to-transparent" },
-  { label: "Finanzas", icon: Wallet, value: "22% ahorro", color: "text-yellow-700", bg: "bg-gradient-to-br from-yellow-500 to-yellow-600", accent: "from-yellow-500/20 to-transparent" },
-  { label: "Metas", icon: Flag, value: "3 activas", color: "text-rose-600", bg: "bg-gradient-to-br from-rose-500 to-rose-600", accent: "from-rose-500/20 to-transparent" },
+  {
+    label: "Rutina",
+    icon: CalendarDays,
+    value: "Semana base",
+    iconBg: "#1e3a5f",
+    iconColor: "#60a5fa",
+  },
+  {
+    label: "Salud",
+    icon: HeartPulse,
+    value: "Sueño 7.5h",
+    iconBg: "#14532d",
+    iconColor: "#4ade80",
+  },
+  {
+    label: "Gym",
+    icon: Dumbbell,
+    value: "4 sesiones",
+    iconBg: "#431407",
+    iconColor: "#fb923c",
+  },
+  {
+    label: "Finanzas",
+    icon: Wallet,
+    value: "22% ahorro",
+    iconBg: "#422006",
+    iconColor: "#fbbf24",
+  },
+  {
+    label: "Metas",
+    icon: Flag,
+    value: "3 activas",
+    iconBg: "#4c0519",
+    iconColor: "#f43f5e",
+  },
 ];
 
 const features = [
@@ -62,7 +97,6 @@ const features = [
     icon: CalendarDays,
     stat: "+40%",
     statLabel: "productividad",
-    gradient: "from-blue-500 via-blue-600 to-indigo-600",
   },
   {
     title: "Nutrición profesional",
@@ -70,7 +104,6 @@ const features = [
     icon: HeartPulse,
     stat: "100%",
     statLabel: "personalizado",
-    gradient: "from-emerald-500 via-emerald-600 to-teal-600",
   },
   {
     title: "Finanzas consciente",
@@ -78,7 +111,6 @@ const features = [
     icon: Wallet,
     stat: "22%",
     statLabel: "ahorro promedio",
-    gradient: "from-amber-500 via-orange-500 to-orange-600",
   },
   {
     title: "Metas accionables",
@@ -86,7 +118,6 @@ const features = [
     icon: Target,
     stat: "3x",
     statLabel: "más probable",
-    gradient: "from-rose-500 via-pink-500 to-red-600",
   },
 ];
 
@@ -103,300 +134,331 @@ const stats = [
   { value: "1", label: "sistema para tu vida", icon: Star },
 ];
 
-// ─── ANIMATED COMPONENTS ──────────────────────────────────────────────
+// ─── COMPONENTS ────────────────────────────────────────────────────────────────
 
-function AnimatedCounter({ value, suffix = "" }: { value: string; suffix?: string }) {
+function AnimatedCounter({ value }: { value: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true });
   const [displayValue, setDisplayValue] = useState("0");
-  
+
   useEffect(() => {
     if (!isInView) return;
     const num = parseInt(value.replace(/\D/g, ""));
-    if (isNaN(num)) { setDisplayValue(value); return; }
-    
+    if (isNaN(num)) {
+      setDisplayValue(value);
+      return;
+    }
     let start = 0;
     const duration = 2000;
     const increment = num / (duration / 16);
     const timer = setInterval(() => {
       start += increment;
-      if (start >= num) { setDisplayValue(value); clearInterval(timer); }
-      else setDisplayValue(Math.floor(start).toString());
+      if (start >= num) {
+        setDisplayValue(value);
+        clearInterval(timer);
+      } else {
+        setDisplayValue(Math.floor(start).toString());
+      }
     }, 16);
     return () => clearInterval(timer);
   }, [isInView, value]);
-  
-  return <span ref={ref}>{displayValue}{suffix}</span>;
+
+  return <span ref={ref}>{displayValue}</span>;
 }
 
-function FloatingElement({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+function GradientText({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <motion.div
-      animate={{ y: [0, -20, 0], rotate: [0, 2, -2, 0], scale: [1, 1.05, 1] }}
-      transition={{ duration: 8, repeat: Infinity, delay, ease: "easeInOut" }}
-      className={className}
+    <span
+      className={cn(
+        "bg-gradient-to-r from-[#ff6b35] via-orange-400 to-amber-400 bg-clip-text text-transparent",
+        className
+      )}
     >
-      {children}
-    </motion.div>
-  );
-}
-
-function GradientText({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <span className={cn("bg-gradient-to-r from-[#ff6b35] via-orange-500 to-amber-500 bg-clip-text text-transparent", className)}>
       {children}
     </span>
   );
 }
 
-function SectionLabel({ number, label }: { number: string; label: string }) {
+function SectionLabel({
+  number,
+  label,
+}: {
+  number: string;
+  label: string;
+}) {
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: -30 }}
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6 }}
-      className="mb-8 flex items-center gap-4"
+      viewport={{ once: true }}
+      className="mb-8 flex items-center gap-3"
     >
-      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#ff6b35] to-orange-500 font-mono text-xs font-black text-white shadow-lg shadow-orange-500/30">
-        {number}
+      <span className="h-px w-8 bg-[#ff6b35]/50" />
+      <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#ff6b35]">
+        {number} — {label}
       </span>
-      <span className="h-px flex-1 bg-gradient-to-r from-orange-300 via-stone-200 to-transparent" />
-      <span className="text-xs font-bold uppercase tracking-[0.2em] text-stone-500">{label}</span>
     </motion.div>
   );
 }
 
-function PrimaryButton({ children, href, onClick, icon: Icon }: { children: React.ReactNode; href?: string; onClick?: () => void; icon?: React.ElementType }) {
-  const className = cn(
-    "group relative inline-flex min-h-14 items-center justify-center gap-3 overflow-hidden rounded-full bg-gradient-to-r from-[#ff6b35] via-orange-500 to-orange-600 px-8 py-4 text-sm font-black text-white shadow-[0_20px_60px_rgba(255,107,53,0.4)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(255,107,53,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6b35]",
-    "before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/30 before:to-white/0 before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000"
+function PrimaryButton({
+  children,
+  href,
+  onClick,
+  large = false,
+}: {
+  children: React.ReactNode;
+  href?: string;
+  onClick?: () => void;
+  large?: boolean;
+}) {
+  const cls = cn(
+    "group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-[#ff6b35] font-bold text-white transition-all duration-300",
+    "shadow-[0_0_0_1px_rgba(255,107,53,0.4),0_16px_40px_rgba(255,107,53,0.3)]",
+    "hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(255,107,53,0.5),0_24px_60px_rgba(255,107,53,0.45)]",
+    "before:absolute before:inset-0 before:translate-x-[-110%] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:transition-transform before:duration-600 hover:before:translate-x-[110%]",
+    large ? "min-h-14 px-8 py-4 text-sm" : "min-h-12 px-7 py-3 text-sm"
   );
-  
-  if (href) {
+  if (href)
     return (
-      <a href={href} className={className}>
+      <a href={href} className={cls}>
         {children}
-        {Icon && <Icon size={18} className="transition-transform group-hover:translate-x-1" />}
-        {!Icon && <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />}
       </a>
     );
-  }
   return (
-    <button onClick={onClick} className={className}>
+    <button onClick={onClick} className={cls}>
       {children}
-      {Icon && <Icon size={18} className="transition-transform group-hover:translate-x-1" />}
-      {!Icon && <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />}
     </button>
   );
 }
 
-function SecondaryButton({ children, onClick, href }: { children: React.ReactNode; onClick?: () => void; href?: string }) {
-  const className = "group inline-flex min-h-14 items-center justify-center gap-3 rounded-full border-2 border-stone-200 bg-white/90 px-8 py-4 text-sm font-black text-stone-900 shadow-[0_10px_40px_rgba(28,25,23,0.08)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-stone-300 hover:bg-white hover:shadow-[0_20px_60px_rgba(28,25,23,0.15)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-stone-900";
-  
-  if (href) return <a href={href} className={className}>{children}</a>;
-  return <button onClick={onClick} className={className}>{children}</button>;
-}
-
-function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
+function GhostButton({
+  children,
+  onClick,
+  href,
+  large = false,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  href?: string;
+  large?: boolean;
+}) {
+  const cls = cn(
+    "group inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 font-semibold text-white/75 backdrop-blur-sm transition-all duration-300",
+    "hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/10 hover:text-white",
+    large ? "min-h-14 px-8 py-4 text-sm" : "min-h-12 px-7 py-3 text-sm"
+  );
+  if (href) return <a href={href} className={cls}>{children}</a>;
   return (
-    <span className={cn("inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-wider", className)}>
+    <button onClick={onClick} className={cls}>
       {children}
-    </span>
+    </button>
   );
 }
 
-// ─── PRODUCT SCENE (MEJORADO ÉPICAMENTE) ───────────────────────────────
+// ─── DASHBOARD PREVIEW ─────────────────────────────────────────────────────────
 
-function ProductScene() {
+function DashboardPreview() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 60, filter: "blur(20px)" }}
+      initial={{ opacity: 0, y: 60, filter: "blur(16px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      transition={{ duration: 1.2, delay: 0.3, type: "spring", stiffness: 40 }}
-      className="relative mx-auto w-full max-w-6xl"
+      transition={{ duration: 1, delay: 0.5, type: "spring", stiffness: 40 }}
+      className="relative mx-auto w-full max-w-5xl"
     >
-      {/* Intense glow effects */}
-      <div className="absolute -inset-16 rounded-[4rem] bg-[radial-gradient(circle_at_25%_20%,rgba(255,107,53,0.3),transparent_35%),radial-gradient(circle_at_75%_35%,rgba(59,130,246,0.2),transparent_35%),radial-gradient(circle_at_50%_90%,rgba(16,185,129,0.2),transparent_35%)] blur-3xl" />
-      
-      <div className="relative overflow-hidden rounded-[3rem] border border-white/80 bg-white/80 p-5 shadow-[0_60px_150px_rgba(68,47,31,0.25),0_2px_0_rgba(255,255,255,0.9)_inset] backdrop-blur-2xl">
-        {/* Browser chrome */}
-        <div className="mb-5 flex items-center gap-3 px-3">
-          <div className="flex gap-2">
-            <span className="h-3.5 w-3.5 rounded-full bg-red-400/90 shadow-sm" />
-            <span className="h-3.5 w-3.5 rounded-full bg-yellow-400/90 shadow-sm" />
-            <span className="h-3.5 w-3.5 rounded-full bg-green-400/90 shadow-sm" />
+      {/* Glow beneath card */}
+      <div className="absolute -inset-1 -bottom-8 rounded-[2rem] bg-[#ff6b35]/10 blur-3xl" />
+
+      {/* Browser chrome */}
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/[0.07] bg-[#1a1410] shadow-[0_60px_120px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.04)]">
+        {/* Topbar */}
+        <div className="flex items-center gap-3 border-b border-white/[0.06] bg-[#221c17] px-5 py-3.5">
+          <div className="flex gap-1.5">
+            <span className="h-[11px] w-[11px] rounded-full bg-[#ff5f57]" />
+            <span className="h-[11px] w-[11px] rounded-full bg-[#febc2e]" />
+            <span className="h-[11px] w-[11px] rounded-full bg-[#28c840]" />
           </div>
-          <div className="mx-auto flex items-center gap-2 rounded-xl bg-stone-100/90 px-5 py-2 text-xs font-semibold text-stone-500 shadow-inner">
-            <LockKeyhole size={11} />
+          <div className="mx-auto flex items-center gap-2 rounded-lg bg-white/[0.05] px-4 py-1.5 text-[11px] text-white/25">
+            <LockKeyhole size={9} />
             life-os.app/dashboard
           </div>
         </div>
 
-        <div className="grid gap-5 rounded-[2.5rem] border border-stone-200/70 bg-gradient-to-br from-[#faf7f3] to-[#f5f0ea] p-5 lg:grid-cols-[0.7fr_1.3fr]">
+        {/* Content grid */}
+        <div className="grid lg:grid-cols-[200px_1fr]">
           {/* Sidebar */}
-          <div className="space-y-5 rounded-[2rem] bg-gradient-to-br from-[#1a1410] to-[#0f0a07] p-6 text-white shadow-2xl">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <img src={iconLight} alt="" className="h-12 w-auto rounded-2xl bg-white p-2 shadow-lg" />
-                  <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-emerald-400 shadow-lg" />
-                  </span>
-                </div>
-                <div>
-                  <p className="text-base font-black">Life OS</p>
-                  <p className="text-xs text-white/40">Sistema personal</p>
-                </div>
+          <div className="border-r border-white/[0.06] bg-[#0d0a08] p-5">
+            <div className="mb-5 flex items-center gap-3">
+              <div className="relative">
+                <img
+                  src={iconLight}
+                  alt=""
+                  className="h-9 w-auto rounded-xl bg-white/5 p-1.5"
+                />
+                <span className="absolute -right-0.5 -top-0.5 flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                </span>
+              </div>
+              <div>
+                <p className="text-[13px] font-black text-white">Life OS</p>
+                <p className="text-[10px] text-white/30">Sistema personal</p>
               </div>
             </div>
 
-            {/* Progress ring */}
-            <div className="relative rounded-3xl bg-white/[0.06] p-6 shadow-inner">
+            {/* Ring stat */}
+            <div className="mb-4 rounded-2xl border border-white/[0.06] bg-white/[0.04] p-4">
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-widest text-white/30">
+                Sistema alineado
+              </p>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-white/30">Sistema alineado</p>
-                  <p className="mt-2 text-5xl font-black">82%</p>
+                  <p className="text-4xl font-black text-white">82%</p>
+                  <p className="mt-1 text-[10px] text-white/30">Rutina activa</p>
                 </div>
-                <div className="relative h-20 w-20">
-                  <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
-                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" />
-                    <motion.path 
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
-                      fill="none" 
-                      stroke="url(#progressGradient)" 
-                      strokeWidth="3"
-                      strokeDasharray="82, 100"
-                      initial={{ strokeDasharray: "0, 100" }}
-                      animate={{ strokeDasharray: "82, 100" }}
-                      transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
-                    />
-                    <defs>
-                      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#ff6b35" />
-                        <stop offset="100%" stopColor="#f59e0b" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>
+                <svg
+                  width="52"
+                  height="52"
+                  viewBox="0 0 36 36"
+                  className="-rotate-90"
+                >
+                  <path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.08)"
+                    strokeWidth="3.5"
+                  />
+                  <motion.path
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="#ff6b35"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    initial={{ strokeDasharray: "0 100" }}
+                    animate={{ strokeDasharray: "82 100" }}
+                    transition={{ duration: 1.8, delay: 0.8, ease: "easeOut" }}
+                  />
+                </svg>
               </div>
-              <p className="mt-4 text-sm text-white/50">Tu rutina base está activa y sincronizada.</p>
             </div>
 
-            {/* Mini stats grid */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Mini stats */}
+            <div className="grid grid-cols-2 gap-2">
               {[
-                { label: "Sueño", value: "7.5h", icon: Moon, color: "text-indigo-300", bg: "bg-indigo-500/10" },
-                { label: "Agua", value: "2.3L", icon: Droplets, color: "text-blue-300", bg: "bg-blue-500/10" },
-                { label: "Ahorro", value: "22%", icon: PiggyBank, color: "text-emerald-300", bg: "bg-emerald-500/10" },
-                { label: "Foco", value: "3 bloques", icon: Target, color: "text-orange-300", bg: "bg-orange-500/10" },
-              ].map((item, index) => (
-                <motion.div
+                { label: "Sueño", value: "7.5h", icon: Moon, color: "#818cf8" },
+                { label: "Agua", value: "2.3L", icon: Droplets, color: "#38bdf8" },
+                { label: "Ahorro", value: "22%", icon: PiggyBank, color: "#34d399" },
+                { label: "Foco", value: "3 bl.", icon: Target, color: "#fb923c" },
+              ].map((item) => (
+                <div
                   key={item.label}
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.1, type: "spring", stiffness: 100 }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  className="group cursor-pointer rounded-2xl bg-white/[0.06] p-4 transition-all hover:bg-white/[0.1] hover:shadow-lg"
+                  className="rounded-xl border border-white/[0.05] bg-white/[0.03] p-2.5"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg", item.bg)}>
-                      <item.icon size={13} className={item.color} />
-                    </div>
-                    <p className="text-[11px] font-semibold text-white/40">{item.label}</p>
-                  </div>
-                  <p className="mt-2 text-lg font-black">{item.value}</p>
-                </motion.div>
+                  <item.icon size={11} style={{ color: item.color }} className="mb-1" />
+                  <p className="text-[9px] font-semibold uppercase tracking-wider text-white/30">
+                    {item.label}
+                  </p>
+                  <p className="mt-0.5 text-[13px] font-bold text-white">{item.value}</p>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* Main content */}
-          <div className="relative min-h-[600px] overflow-hidden rounded-[2rem] bg-white p-6 shadow-2xl sm:p-8">
-            <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* Main */}
+          <div className="relative min-h-[360px] bg-[#f5f0eb] p-5">
+            <div className="mb-4 flex items-center justify-between">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-stone-400">Semana base</p>
-                <h3 className="mt-1 text-2xl font-black text-stone-950">Plan operativo personal</h3>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-[#a89588]">
+                  Semana base
+                </p>
+                <p className="text-lg font-black text-[#1a1410]">
+                  Plan operativo personal
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <button className="rounded-full border-2 border-stone-200 bg-stone-50 px-5 py-2.5 text-xs font-bold text-stone-600 transition-all hover:border-stone-300 hover:bg-stone-100 hover:shadow-md">
-                  Jun 2026
-                </button>
-                <button className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#ff6b35] to-orange-500 text-white shadow-lg transition-all hover:scale-110 hover:shadow-xl">
-                  <ArrowUpRight size={18} />
-                </button>
-              </div>
+              <button className="flex h-8 w-8 items-center justify-center rounded-full bg-[#ff6b35] text-white shadow-[0_4px_14px_rgba(255,107,53,0.35)]">
+                <ArrowUpRight size={15} />
+              </button>
             </div>
 
-            {/* Calendar strip */}
-            <div className="mt-8 grid grid-cols-5 gap-3">
-              {["Lun", "Mar", "Mié", "Jue", "Vie"].map((day, index) => (
-                <motion.div 
-                  key={day} 
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 0.6 + index * 0.08, type: "spring", stiffness: 100 }}
-                  whileHover={{ scale: 1.05, y: -4 }}
+            {/* Week */}
+            <div className="mb-4 grid grid-cols-5 gap-2">
+              {[
+                { d: "Lun", today: false, blocks: ["#dbeafe", "#d1fae5"] },
+                { d: "Mar", today: false, blocks: ["#dbeafe", "#e5e7eb"] },
+                { d: "Mié", today: true, blocks: ["#fed7aa", "#fecaca"] },
+                { d: "Jue", today: false, blocks: ["#dbeafe", "#d1fae5"] },
+                { d: "Vie", today: false, blocks: ["#dbeafe", "#e5e7eb"] },
+              ].map((day) => (
+                <div
+                  key={day.d}
                   className={cn(
-                    "cursor-pointer rounded-2xl border-2 p-4 transition-all hover:shadow-xl",
-                    index === 2 ? "border-orange-300 bg-gradient-to-br from-orange-50 to-orange-100/50 shadow-lg" : "border-stone-100 bg-stone-50/50"
+                    "rounded-xl border p-2.5",
+                    day.today
+                      ? "border-orange-300/60 bg-orange-50/60"
+                      : "border-black/[0.06] bg-white"
                   )}
                 >
-                  <p className={cn("text-center text-[11px] font-bold uppercase", index === 2 ? "text-[#ff6b35]" : "text-stone-400")}>
-                    {day}
+                  <p
+                    className={cn(
+                      "mb-2 text-center text-[9px] font-bold uppercase",
+                      day.today ? "text-[#ff6b35]" : "text-[#a89588]"
+                    )}
+                  >
+                    {day.d}
                   </p>
-                  <div className="mt-4 space-y-2">
-                    <div className="h-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200/80 shadow-sm" />
-                    <div className={cn("h-16 rounded-xl", index === 2 ? "bg-gradient-to-br from-orange-100 to-orange-200/80 shadow-sm" : "bg-gradient-to-br from-emerald-100 to-emerald-200/80 shadow-sm")} />
-                    <div className="h-10 rounded-xl bg-gradient-to-br from-stone-100 to-stone-200/50 shadow-sm" />
-                  </div>
-                </motion.div>
+                  <div
+                    className="mb-1 h-8 rounded-lg"
+                    style={{ background: day.blocks[0] }}
+                  />
+                  <div
+                    className="h-11 rounded-lg"
+                    style={{ background: day.blocks[1] }}
+                  />
+                </div>
               ))}
             </div>
 
-            {/* Modules grid */}
-            <div className="mt-7 grid gap-4 sm:grid-cols-2">
-              {modules.map((module, index) => (
-                <motion.div
-                  key={module.label}
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: 0.7 + index * 0.1, type: "spring", stiffness: 100 }}
-                  whileHover={{ scale: 1.03, y: -4 }}
-                  className="group cursor-pointer rounded-2xl border-2 border-stone-100 bg-white p-5 shadow-[0_10px_40px_rgba(68,47,31,0.08)] transition-all hover:border-orange-200 hover:shadow-[0_20px_60px_rgba(255,107,53,0.15)]"
+            {/* Module cards */}
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {modules.slice(0, 4).map((mod) => (
+                <div
+                  key={mod.label}
+                  className="flex items-center gap-3 rounded-xl border border-black/[0.06] bg-white p-3 transition-all hover:-translate-y-0.5 hover:shadow-md"
                 >
-                  <div className="flex items-center gap-4">
-                    <span className={cn("flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-lg transition-all group-hover:scale-110 group-hover:rotate-6", module.bg)}>
-                      <module.icon size={20} />
-                    </span>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="text-base font-black text-stone-950">{module.label}</p>
-                        <ArrowUpRight size={16} className="text-stone-300 opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
-                      </div>
-                      <p className="text-sm text-stone-500">{module.value}</p>
-                    </div>
+                  <span
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                    style={{ background: mod.iconBg }}
+                  >
+                    <mod.icon size={15} style={{ color: mod.iconColor }} />
+                  </span>
+                  <div>
+                    <p className="text-[12px] font-black text-[#1a1410]">{mod.label}</p>
+                    <p className="text-[10px] text-[#a89588]">{mod.value}</p>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
 
-            {/* Floating notification */}
+            {/* Floating notif */}
             <motion.div
-              animate={{ y: [0, -8, 0], rotate: [0, 1, -1, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute bottom-8 right-8 hidden max-w-[220px] rounded-2xl border-2 border-orange-200/80 bg-gradient-to-br from-[#fff8f3] to-orange-50/50 p-5 shadow-[0_30px_80px_rgba(255,107,53,0.25)] backdrop-blur-sm sm:block"
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute bottom-5 right-5 hidden min-w-[160px] rounded-2xl border border-orange-100 bg-white/95 p-3.5 shadow-[0_16px_40px_rgba(255,107,53,0.15)] backdrop-blur-sm sm:block"
             >
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff6b35] opacity-75" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#ff6b35]" />
-                </span>
-                <p className="text-[11px] font-bold uppercase text-stone-500">Próxima acción</p>
+              <div className="mb-1 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#ff6b35]" />
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#a89588]">
+                  Próxima acción
+                </p>
               </div>
-              <p className="mt-2 text-base font-black text-stone-950">Entrenamiento</p>
-              <p className="text-sm text-stone-600">6:00 PM • Gym Upper Body</p>
+              <p className="text-[13px] font-black text-[#1a1410]">Entrenamiento</p>
+              <p className="text-[10px] text-[#a89588]">6:00 PM · Gym Upper Body</p>
             </motion.div>
           </div>
         </div>
@@ -405,20 +467,23 @@ function ProductScene() {
   );
 }
 
-// ─── MAIN COMPONENT ───────────────────────────────────────────────────
+// ─── MAIN ──────────────────────────────────────────────────────────────────────
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const heroRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const handle = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handle);
+    return () => window.removeEventListener("scroll", handle);
   }, []);
 
   const navItems = [
@@ -429,48 +494,59 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fffaf5] via-[#fef6f0] to-[#fdf2e9] text-stone-950 selection:bg-orange-200/70">
+    <div className="min-h-screen bg-[#0d0a08] text-white selection:bg-orange-500/30">
       {/* Progress bar */}
-      <motion.div className="fixed left-0 right-0 top-0 z-[70] h-[3px] origin-left bg-gradient-to-r from-[#ff6b35] via-orange-500 to-amber-500 shadow-lg shadow-orange-500/50" style={{ scaleX }} />
+      <motion.div
+        className="fixed left-0 right-0 top-0 z-[70] h-[2px] origin-left bg-gradient-to-r from-[#ff6b35] to-amber-400"
+        style={{ scaleX }}
+      />
 
-      {/* Header */}
-      <motion.header 
+      {/* ─── HEADER ──────────────────────────────────────────────────────── */}
+      <motion.header
         className={cn(
-          "fixed left-4 right-4 top-4 z-50 transition-all duration-500 md:left-8 md:right-8",
-          scrolled && "top-3"
+          "fixed left-4 right-4 top-4 z-50 transition-all duration-500 md:left-6 md:right-6"
         )}
       >
-        <nav className={cn(
-          "mx-auto flex max-w-7xl items-center justify-between rounded-2xl border px-6 py-4 shadow-xl backdrop-blur-2xl transition-all duration-500",
-          scrolled 
-            ? "border-stone-200/90 bg-white/95 shadow-[0_10px_50px_rgba(68,47,31,0.15)]" 
-            : "border-white/80 bg-white/80"
-        )} aria-label="Navegación principal">
-          <a href="#" className="flex min-h-12 items-center gap-3 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#ff6b35]">
-            <img src={iconLight} alt="Life OS" className="h-10 w-auto" />
-            <span className="text-lg font-black">Life OS</span>
+        <nav
+          className={cn(
+            "mx-auto flex max-w-7xl items-center justify-between rounded-2xl border px-5 py-3 transition-all duration-500",
+            scrolled
+              ? "border-white/10 bg-[#0d0a08]/90 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
+              : "border-white/[0.06] bg-white/[0.04] backdrop-blur-xl"
+          )}
+        >
+          <a href="#" className="flex items-center gap-3">
+            <img src={iconLight} alt="Life OS" className="h-8 w-auto" />
+            <span className="text-[15px] font-black">Life OS</span>
           </a>
-          
-          <div className="hidden items-center gap-10 md:flex">
+
+          <div className="hidden items-center gap-7 md:flex">
             {navItems.map((item) => (
-              <a key={item.href} href={item.href} className="group relative text-sm font-bold text-stone-600 transition-colors hover:text-stone-950">
+              <a
+                key={item.href}
+                href={item.href}
+                className="group relative text-[13px] font-semibold text-white/45 transition-colors hover:text-white"
+              >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-[#ff6b35] to-orange-500 transition-all duration-300 group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#ff6b35] transition-all group-hover:w-full" />
               </a>
             ))}
           </div>
-          
-          <div className="hidden items-center gap-3 md:flex">
-            <SecondaryButton onClick={onAccess}>Acceder</SecondaryButton>
-            <PrimaryButton href={DOWNLOAD_URL} icon={Download}>Descargar</PrimaryButton>
+
+          <div className="hidden items-center gap-2.5 md:flex">
+            <GhostButton onClick={onAccess}>Acceder</GhostButton>
+            <PrimaryButton href={DOWNLOAD_URL}>
+              <Download size={15} />
+              Descargar
+            </PrimaryButton>
           </div>
-          
+
           <button
             onClick={() => setMobileOpen(true)}
-            className="flex min-h-12 min-w-12 items-center justify-center rounded-xl border-2 border-stone-200 bg-white transition-all hover:border-stone-300 hover:bg-stone-50 hover:shadow-md md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 md:hidden"
             aria-label="Abrir menú"
           >
-            <Menu size={22} />
+            <Menu size={19} />
           </button>
         </nav>
       </motion.header>
@@ -478,364 +554,433 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
       {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-white/98 p-6 backdrop-blur-xl md:hidden" 
-            role="dialog" 
-            aria-modal="true"
+            className="fixed inset-0 z-[60] bg-[#0d0a08]/98 p-6 backdrop-blur-xl md:hidden"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <img src={iconLight} alt="" className="h-10 w-auto" />
-                <span className="text-lg font-black">Life OS</span>
+                <img src={iconLight} alt="" className="h-8 w-auto" />
+                <span className="font-black">Life OS</span>
               </div>
-              <button onClick={() => setMobileOpen(false)} className="flex min-h-12 min-w-12 items-center justify-center rounded-xl border-2 border-stone-200 transition-all hover:bg-stone-50 hover:shadow-md" aria-label="Cerrar menú">
-                <X size={22} />
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10"
+                aria-label="Cerrar menú"
+              >
+                <X size={19} />
               </button>
             </div>
-            <div className="mt-14 flex flex-col gap-3">
+            <div className="mt-14 flex flex-col gap-1">
               {navItems.map((item, i) => (
-                <motion.a 
-                  key={item.href} 
-                  href={item.href} 
-                  onClick={() => setMobileOpen(false)} 
-                  initial={{ opacity: 0, x: -30 }}
+                <motion.a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="border-b border-stone-100 py-6 text-4xl font-black transition-colors hover:text-[#ff6b35]"
+                  transition={{ delay: i * 0.08 }}
+                  className="border-b border-white/[0.06] py-5 text-3xl font-black text-white/80 transition-colors hover:text-[#ff6b35]"
                 >
                   {item.label}
                 </motion.a>
               ))}
             </div>
-            <div className="mt-12 grid gap-4">
-              <PrimaryButton href={DOWNLOAD_URL} icon={Download}>Descargar App</PrimaryButton>
-              <SecondaryButton onClick={onAccess}>Acceder</SecondaryButton>
+            <div className="mt-10 grid gap-3">
+              <PrimaryButton href={DOWNLOAD_URL} large>
+                <Download size={17} />
+                Descargar App
+              </PrimaryButton>
+              <GhostButton onClick={onAccess} large>
+                <LockKeyhole size={15} />
+                Acceder
+              </GhostButton>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       <main>
-        {/* ─── HERO ─────────────────────────────────────────────── */}
-        <section ref={heroRef} className="relative overflow-hidden px-4 pb-32 pt-40 sm:px-6 lg:pb-40 lg:pt-52">
-          {/* Animated background */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,107,53,0.2),transparent_35%),radial-gradient(circle_at_82%_12%,rgba(59,130,246,0.15),transparent_35%),radial-gradient(circle_at_48%_90%,rgba(16,185,129,0.15),transparent_35%)]" />
-            <FloatingElement delay={0} className="absolute left-[10%] top-[20%]">
-              <div className="h-32 w-32 rounded-full bg-orange-200/40 blur-2xl" />
-            </FloatingElement>
-            <FloatingElement delay={2} className="absolute right-[15%] top-[30%]">
-              <div className="h-48 w-48 rounded-full bg-blue-200/30 blur-3xl" />
-            </FloatingElement>
-            <FloatingElement delay={1} className="absolute bottom-[20%] left-[20%]">
-              <div className="h-36 w-36 rounded-full bg-emerald-200/30 blur-2xl" />
-            </FloatingElement>
-            <FloatingElement delay={3} className="absolute right-[30%] top-[60%]">
-              <div className="h-24 w-24 rounded-full bg-amber-200/30 blur-xl" />
-            </FloatingElement>
+        {/* ─── HERO ──────────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden px-4 pb-24 pt-36 sm:px-6 lg:pb-28 lg:pt-48">
+          {/* Background layers */}
+          <div className="absolute inset-0">
+            {/* Grid */}
+            <div
+              className="absolute inset-0 opacity-[0.035]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+                backgroundSize: "60px 60px",
+                maskImage:
+                  "radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent)",
+              }}
+            />
+            {/* Top glow */}
+            <div className="absolute left-1/2 top-0 h-[600px] w-[800px] -translate-x-1/2 rounded-full bg-[#ff6b35]/[0.15] blur-[120px]" />
+            {/* Side accents */}
+            <div className="absolute bottom-1/4 left-[5%] h-[300px] w-[300px] rounded-full bg-blue-600/[0.08] blur-[100px]" />
+            <div className="absolute bottom-1/3 right-[8%] h-[250px] w-[250px] rounded-full bg-emerald-500/[0.07] blur-[80px]" />
           </div>
 
-          <div className="relative mx-auto max-w-7xl">
-            <div className="mx-auto max-w-5xl text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.8, type: "spring", stiffness: 80 }}
-                className="mx-auto mb-10 inline-flex items-center gap-3 rounded-full border-2 border-orange-200/80 bg-white/90 px-6 py-3 text-sm font-bold uppercase tracking-wider text-stone-700 shadow-xl backdrop-blur-xl"
-              >
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff6b35] opacity-75" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#ff6b35]" />
-                </span>
-                Tu vida, convertida en sistema
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.1 }}
-                className="text-balance text-6xl font-black leading-[0.95] text-stone-950 sm:text-7xl lg:text-8xl"
-              >
-                Organiza tu <GradientText>salud</GradientText>, <GradientText>hábitos</GradientText>, <GradientText>dinero</GradientText> y <GradientText>metas</GradientText> en un solo sistema.
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.2 }}
-                className="mx-auto mt-10 max-w-3xl text-pretty text-xl leading-9 text-stone-600 sm:text-2xl"
-              >
-                Life OS une rutina semanal, nutrición, entrenamiento, finanzas, mindset y objetivos para ayudarte a decidir mejor cada día, sin vivir saltando entre apps.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.3 }}
-                className="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row"
-              >
-                <PrimaryButton href={DOWNLOAD_URL} icon={Download}>
-                  Descargar App
-                </PrimaryButton>
-                <SecondaryButton onClick={onAccess}>
-                  <LockKeyhole size={18} className="text-stone-500" />
-                  Acceder a mi cuenta
-                </SecondaryButton>
-              </motion.div>
-
-              {/* Trust badges */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 }}
-                className="mt-10 flex flex-wrap items-center justify-center gap-8 text-sm font-bold text-stone-500"
-              >
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 size={16} className="text-emerald-500" />
-                  Gratis para empezar
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 size={16} className="text-emerald-500" />
-                  Sin tarjeta
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckCircle2 size={16} className="text-emerald-500" />
-                  APK Android
-                </span>
-              </motion.div>
-            </div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 80 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2, delay: 0.5 }}
-              className="mt-20"
+          <div className="relative mx-auto max-w-7xl text-center">
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 16, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="mb-9 inline-flex items-center gap-2.5 rounded-full border border-[#ff6b35]/25 bg-[#ff6b35]/10 px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-[#ff8c5a]"
             >
-              <ProductScene />
+              <span className="relative flex h-[7px] w-[7px]">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff6b35] opacity-75" />
+                <span className="relative inline-flex h-[7px] w-[7px] rounded-full bg-[#ff6b35]" />
+              </span>
+              Tu vida, convertida en sistema
             </motion.div>
 
-            {/* Scroll indicator */}
-            <motion.div 
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-              className="mt-20 flex justify-center"
+            {/* Headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, type: "spring", stiffness: 60 }}
+              className="mx-auto max-w-5xl text-balance text-[clamp(44px,8vw,92px)] font-black leading-[0.92] tracking-[-0.03em] text-white"
             >
-              <ChevronDown size={28} className="text-stone-400" />
+              Organiza tu{" "}
+              <GradientText>salud</GradientText>,{" "}
+              <span className="relative inline-block">
+                <GradientText>hábitos</GradientText>
+                <motion.span
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+                  className="absolute -bottom-1 left-0 right-0 h-[3px] origin-left rounded-full bg-gradient-to-r from-[#ff6b35] to-amber-400"
+                />
+              </span>
+              ,{" "}
+              <GradientText>dinero</GradientText> y{" "}
+              <GradientText>metas</GradientText>{" "}
+              en un solo sistema.
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.25 }}
+              className="mx-auto mt-8 max-w-2xl text-pretty text-lg leading-8 text-white/45 sm:text-xl"
+            >
+              Life OS une rutina semanal, nutrición, entrenamiento, finanzas, mindset y
+              objetivos para ayudarte a decidir mejor cada día, sin vivir saltando entre apps.
+            </motion.p>
+
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+            >
+              <PrimaryButton href={DOWNLOAD_URL} large>
+                <Download size={17} />
+                Descargar App
+                <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+              </PrimaryButton>
+              <GhostButton onClick={onAccess} large>
+                <LockKeyhole size={15} className="opacity-50" />
+                Acceder a mi cuenta
+              </GhostButton>
+            </motion.div>
+
+            {/* Trust */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.55 }}
+              className="mt-7 flex flex-wrap items-center justify-center gap-6 text-[11px] font-semibold text-white/30"
+            >
+              {["Gratis para empezar", "Sin tarjeta", "APK Android"].map((t) => (
+                <span key={t} className="flex items-center gap-1.5">
+                  <CheckCircle2 size={12} className="text-emerald-500/80" />
+                  {t}
+                </span>
+              ))}
+            </motion.div>
+
+            {/* Dashboard */}
+            <div className="mt-20">
+              <DashboardPreview />
+            </div>
+
+            {/* Scroll hint */}
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              className="mt-16 flex flex-col items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/20"
+            >
+              <ChevronDown size={20} />
+              Explorar
             </motion.div>
           </div>
         </section>
 
-        {/* ─── WHAT IS ──────────────────────────────────────────── */}
-        <section id="que-es" className="relative px-4 py-32 sm:px-6">
-          <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        {/* ─── WHAT IS ───────────────────────────────────────────────────── */}
+        <section id="que-es" className="relative px-4 py-24 sm:px-6">
+          {/* Divider line */}
+          <div className="mx-auto mb-24 max-w-7xl">
+            <div className="h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+          </div>
+
+          <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1fr_1fr] lg:items-center">
             <div>
               <SectionLabel number="01" label="Qué es Life OS" />
-              <motion.h2 
-                initial={{ opacity: 0, y: 30 }}
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8 }}
-                className="text-balance text-5xl font-black text-stone-950 sm:text-6xl"
+                viewport={{ once: true }}
+                className="text-balance text-4xl font-black leading-[1] tracking-tight text-white sm:text-5xl"
               >
-                Una capa de orden para las áreas que más <GradientText>pesan</GradientText> en tu vida.
+                Una capa de orden para las áreas que más{" "}
+                <GradientText>pesan</GradientText> en tu vida.
               </motion.h2>
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                className="mt-8 text-xl leading-9 text-stone-600"
+                viewport={{ once: true }}
+                className="mt-6 text-lg leading-8 text-white/45"
               >
-                Life OS no es solo un tracker. Es un tablero operativo personal: primero entiende tus datos base, después crea estructura semanal y finalmente conecta tus decisiones diarias con progreso visible.
+                Life OS no es solo un tracker. Es un tablero operativo personal: primero
+                entiende tus datos base, después crea estructura semanal y finalmente
+                conecta tus decisiones diarias con progreso visible.
               </motion.p>
-              
-              <div className="mt-12 grid gap-4">
+
+              <div className="mt-10 grid gap-3">
                 {benefits.map((benefit, i) => (
-                  <motion.div 
-                    key={benefit.text} 
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ delay: i * 0.1, duration: 0.6 }}
-                    whileHover={{ x: 8, scale: 1.02 }}
-                    className="group flex items-center gap-5 rounded-2xl border-2 border-stone-200/80 bg-white p-5 shadow-[0_8px_30px_rgba(68,47,31,0.06)] transition-all hover:border-emerald-200 hover:shadow-[0_12px_50px_rgba(16,185,129,0.15)]"
-                  >
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-6">
-                      <benefit.icon size={20} />
-                    </span>
-                    <span className="text-lg font-bold text-stone-800">{benefit.text}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-[3rem] border-2 border-stone-200/80 bg-white p-6 shadow-[0_30px_100px_rgba(68,47,31,0.15)]">
-              <div className="grid gap-4">
-                {[
-                  { step: "Datos base", desc: "Peso, sueño, ingresos, gastos, objetivos.", icon: Activity },
-                  { step: "Diagnóstico", desc: "Calorías, agua, fondo, salud financiera.", icon: BarChart3 },
-                  { step: "Rutina semanal", desc: "Trabajo, estudio, gym y tiempo libre.", icon: CalendarDays },
-                  { step: "Ejecución diaria", desc: "Hábitos, comidas, sesiones y metas.", icon: Zap },
-                  { step: "Progreso", desc: "Rachas, métricas y claridad semanal.", icon: TrendingUp },
-                ].map((item, index) => (
                   <motion.div
-                    key={item.step}
-                    initial={{ opacity: 0, x: 40 }}
+                    key={benefit.text}
+                    initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ duration: 0.6, delay: index * 0.1, type: "spring", stiffness: 80 }}
-                    whileHover={{ x: 8, scale: 1.02 }}
-                    className="group flex items-center gap-5 rounded-2xl bg-gradient-to-br from-[#fbf7f2] to-[#f8f4ef] p-6 transition-all hover:from-orange-50 hover:to-orange-100/50 hover:shadow-lg"
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                    className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4 transition-all hover:border-[#ff6b35]/20 hover:bg-white/[0.05]"
                   >
-                    <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-stone-950 to-stone-800 font-mono text-sm font-black text-white shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-6">
-                      {String(index + 1).padStart(2, "0")}
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform group-hover:scale-110">
+                      <benefit.icon size={18} />
                     </span>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="text-lg font-black text-stone-950">{item.step}</p>
-                        <item.icon size={16} className="text-stone-400 opacity-0 transition-opacity group-hover:opacity-100" />
-                      </div>
-                      <p className="mt-1 text-base text-stone-600">{item.desc}</p>
-                    </div>
-                    <ChevronRight className="text-stone-300 transition-all group-hover:translate-x-2 group-hover:text-[#ff6b35]" size={20} />
+                    <span className="font-semibold text-white/70">{benefit.text}</span>
                   </motion.div>
                 ))}
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* ─── FEATURES ─────────────────────────────────────────── */}
-        <section id="funciones" className="relative px-4 py-32 sm:px-6">
-          {/* Background decoration */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,107,53,0.08),transparent_60%)]" />
-          
-          <div className="relative mx-auto max-w-7xl">
-            <SectionLabel number="02" label="Características principales" />
-            
-            <div className="mb-16 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-              <motion.h2 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8 }}
-                className="max-w-4xl text-balance text-5xl font-black text-stone-950 sm:text-6xl"
-              >
-                Todo lo importante, <GradientText>conectado</GradientText> por una misma estructura.
-              </motion.h2>
-              <motion.p 
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, delay: 0.1 }}
-                className="max-w-md text-xl leading-9 text-stone-600"
-              >
-                Cada módulo responde una pregunta concreta: qué hago hoy, por qué importa y cómo mejora mi sistema.
-              </motion.p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {features.map((feature, index) => (
-                <motion.article
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 40, filter: "blur(10px)" }}
-                  whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  viewport={{ once: true, margin: "-80px" }}
-                  transition={{ duration: 0.7, delay: index * 0.1 }}
-                  whileHover={{ y: -12, scale: 1.03 }}
-                  className="group relative overflow-hidden rounded-[2.5rem] border-2 border-stone-200/80 bg-white p-8 shadow-[0_15px_50px_rgba(68,47,31,0.08)] transition-all hover:border-orange-200 hover:shadow-[0_25px_80px_rgba(255,107,53,0.18)]"
+            <div className="rounded-[2rem] border border-white/[0.07] bg-white/[0.03] p-5">
+              {[
+                { step: "Datos base", desc: "Peso, sueño, ingresos, gastos, objetivos.", icon: Activity },
+                { step: "Diagnóstico", desc: "Calorías, agua, fondo, salud financiera.", icon: BarChart3 },
+                { step: "Rutina semanal", desc: "Trabajo, estudio, gym y tiempo libre.", icon: CalendarDays },
+                { step: "Ejecución diaria", desc: "Hábitos, comidas, sesiones y metas.", icon: Zap },
+                { step: "Progreso", desc: "Rachas, métricas y claridad semanal.", icon: TrendingUp },
+              ].map((item, index) => (
+                <motion.div
+                  key={item.step}
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                  className="group flex items-center gap-4 rounded-2xl p-4 transition-colors hover:bg-white/[0.04]"
                 >
-                  {/* Hover gradient */}
-                  <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-500 group-hover:opacity-5", feature.gradient)} />
-                  
-                  <div className="relative">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className={cn("flex h-14 w-14 items-center justify-center rounded-3xl bg-gradient-to-br text-white shadow-xl transition-all duration-500 group-hover:scale-125 group-hover:rotate-6", feature.gradient)}>
-                        <feature.icon size={26} />
-                      </span>
-                      <span className="rounded-full bg-stone-100 px-4 py-1.5 text-xs font-bold text-stone-600">
-                        {feature.statLabel}
-                      </span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1a1410] font-mono text-xs font-black text-white ring-1 ring-white/10 transition-transform group-hover:scale-110 group-hover:ring-[#ff6b35]/40">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-black text-white">{item.step}</p>
+                      <item.icon
+                        size={13}
+                        className="text-white/20 opacity-0 transition-opacity group-hover:opacity-100"
+                      />
                     </div>
-                    
-                    <div className="mt-8">
-                      <p className="text-3xl font-black text-[#ff6b35]">{feature.stat}</p>
-                      <h3 className="mt-3 text-2xl font-black text-stone-950">{feature.title}</h3>
-                      <p className="mt-4 text-base leading-8 text-stone-600">{feature.text}</p>
-                    </div>
+                    <p className="mt-0.5 text-sm text-white/40">{item.desc}</p>
                   </div>
-                </motion.article>
+                  <ChevronRight
+                    size={16}
+                    className="text-white/20 transition-all group-hover:translate-x-1 group-hover:text-[#ff6b35]"
+                  />
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ─── BEFORE / AFTER ───────────────────────────────────── */}
-        <section id="beneficios" className="px-4 py-32 sm:px-6">
+        {/* ─── FEATURES ──────────────────────────────────────────────────── */}
+        <section id="funciones" className="relative px-4 py-24 sm:px-6">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(255,107,53,0.05),transparent)]" />
+
+          <div className="relative mx-auto max-w-7xl">
+            <SectionLabel number="02" label="Características principales" />
+
+            <div className="mb-14 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="max-w-3xl text-balance text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl"
+              >
+                Todo lo importante,{" "}
+                <span className="text-white/30">conectado</span>{" "}
+                por una misma estructura.
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="max-w-sm text-base leading-7 text-white/40"
+              >
+                Cada módulo responde una pregunta concreta: qué hago hoy, por qué importa y
+                cómo mejora mi sistema.
+              </motion.p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {features.map((feature, index) => (
+                <motion.article
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                  whileHover={{ y: -6 }}
+                  className="group relative overflow-hidden rounded-[1.5rem] border border-white/[0.07] bg-white/[0.03] p-7 transition-all hover:border-[#ff6b35]/20 hover:bg-white/[0.05]"
+                >
+                  {/* Top shimmer line */}
+                  <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff6b35]/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+
+                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-[#ff6b35]/20 bg-[#ff6b35]/10 text-[#ff6b35] transition-transform duration-300 group-hover:scale-110">
+                    <feature.icon size={20} />
+                  </div>
+
+                  <p className="text-[38px] font-black leading-none text-[#ff6b35]">
+                    {feature.stat}
+                  </p>
+                  <p className="mt-1 mb-4 text-[10px] font-bold uppercase tracking-widest text-white/25">
+                    {feature.statLabel}
+                  </p>
+                  <h3 className="mb-3 text-lg font-black text-white">{feature.title}</h3>
+                  <p className="text-sm leading-7 text-white/40">{feature.text}</p>
+                </motion.article>
+              ))}
+            </div>
+
+            {/* Stats row */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-6 grid grid-cols-3 overflow-hidden rounded-[1.5rem] border border-white/[0.07] bg-white/[0.02]"
+            >
+              {stats.map(({ value, label, icon: Icon }, i) => (
+                <div
+                  key={label}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-2 p-8 text-center",
+                    i < stats.length - 1 && "border-r border-white/[0.06]"
+                  )}
+                >
+                  <Icon size={20} className="text-[#ff6b35]/60" />
+                  <p className="text-3xl font-black text-white">
+                    <AnimatedCounter value={value} />
+                    {value.includes("min") ? " min" : ""}
+                  </p>
+                  <p className="text-xs font-semibold text-white/30">{label}</p>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ─── BEFORE / AFTER ─────────────────────────────────────────────── */}
+        <section id="beneficios" className="px-4 py-24 sm:px-6">
           <div className="mx-auto max-w-7xl">
             <SectionLabel number="03" label="Antes / Después" />
-            
-            <div className="grid gap-8 lg:grid-cols-2">
+
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-12 text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl"
+            >
+              De <span className="text-white/25">caos</span> a sistema.
+            </motion.h2>
+
+            <div className="grid gap-4 lg:grid-cols-2">
               {/* Before */}
-              <motion.div 
-                initial={{ opacity: 0, x: -40 }}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8 }}
-                className="rounded-[3rem] border-2 border-stone-200/80 bg-white p-10 shadow-[0_25px_80px_rgba(68,47,31,0.1)]"
+                viewport={{ once: true }}
+                className="rounded-[2rem] border border-white/[0.06] bg-white/[0.02] p-8"
               >
-                <div className="mb-10 flex items-center gap-4">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-stone-100">
-                    <X size={22} className="text-stone-400" />
+                <div className="mb-7 flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.06]">
+                    <X size={16} className="text-white/30" />
                   </span>
-                  <p className="text-base font-black uppercase tracking-wider text-stone-500">Antes</p>
+                  <p className="text-[11px] font-black uppercase tracking-widest text-white/25">
+                    Antes
+                  </p>
                 </div>
-                {["Notas sueltas en apps diferentes", "Apps separadas sin conexión", "Metas sin seguimiento real", "Finanzas sin diagnóstico"].map((item, i) => (
-                  <motion.div 
-                    key={item} 
-                    initial={{ opacity: 0, x: -20 }}
+                {[
+                  "Notas sueltas en apps diferentes",
+                  "Apps separadas sin conexión",
+                  "Metas sin seguimiento real",
+                  "Finanzas sin diagnóstico",
+                ].map((item, i) => (
+                  <motion.div
+                    key={item}
+                    initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.6 }}
-                    className="mb-5 flex items-center gap-5 rounded-2xl bg-stone-50/80 p-6 text-stone-600"
+                    transition={{ delay: i * 0.08 }}
+                    className="mb-3 flex items-center gap-3.5 rounded-xl bg-white/[0.03] px-4 py-3.5"
                   >
-                    <X size={20} className="shrink-0 text-stone-300" />
-                    <span className="text-lg font-bold">{item}</span>
+                    <X size={15} className="shrink-0 text-white/20" />
+                    <span className="text-sm font-semibold text-white/40">{item}</span>
                   </motion.div>
                 ))}
               </motion.div>
 
               {/* After */}
-              <motion.div 
-                initial={{ opacity: 0, x: 40 }}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8 }}
-                className="relative overflow-hidden rounded-[3rem] border-2 border-orange-200/80 bg-gradient-to-br from-[#fff6ef] to-orange-50/50 p-10 shadow-[0_30px_100px_rgba(255,107,53,0.2)]"
+                viewport={{ once: true }}
+                className="relative overflow-hidden rounded-[2rem] border border-[#ff6b35]/20 bg-[#ff6b35]/[0.06] p-8"
               >
-                <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#ff6b35]/10 blur-3xl" />
-                
-                <div className="relative mb-10 flex items-center gap-4">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#ff6b35] to-orange-500 shadow-lg">
-                    <CheckCircle2 size={22} className="text-white" />
+                <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#ff6b35]/10 blur-3xl" />
+                <div className="relative mb-7 flex items-center gap-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ff6b35]/15">
+                    <CheckCircle2 size={16} className="text-[#ff6b35]" />
                   </span>
-                  <p className="text-base font-black uppercase tracking-wider text-[#ff6b35]">Después con Life OS</p>
+                  <p className="text-[11px] font-black uppercase tracking-widest text-[#ff8c5a]">
+                    Después con Life OS
+                  </p>
                 </div>
-                
-                {["Semana base visible y ajustable", "Módulos conectados en un flujo", "Objetivos accionables con fechas", "Salud financiera y física en contexto"].map((item, i) => (
-                  <motion.div 
-                    key={item} 
-                    initial={{ opacity: 0, x: 20 }}
+                {[
+                  "Semana base visible y ajustable",
+                  "Módulos conectados en un flujo",
+                  "Objetivos accionables con fechas",
+                  "Salud financiera y física en contexto",
+                ].map((item, i) => (
+                  <motion.div
+                    key={item}
+                    initial={{ opacity: 0, x: 10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.6 }}
-                    className="mb-5 flex items-center gap-5 rounded-2xl bg-white/90 p-6 text-stone-900 shadow-lg"
+                    transition={{ delay: i * 0.08 }}
+                    className="relative mb-3 flex items-center gap-3.5 rounded-xl bg-white/[0.06] px-4 py-3.5"
                   >
-                    <CheckCircle2 size={20} className="shrink-0 text-emerald-500" />
-                    <span className="text-lg font-bold">{item}</span>
+                    <CheckCircle2 size={15} className="shrink-0 text-emerald-400" />
+                    <span className="text-sm font-bold text-white/80">{item}</span>
                   </motion.div>
                 ))}
               </motion.div>
@@ -843,75 +988,73 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
           </div>
         </section>
 
-        {/* ─── DEMO ─────────────────────────────────────────────── */}
-        <section id="demo" className="px-4 py-32 sm:px-6">
+        {/* ─── DEMO ───────────────────────────────────────────────────────── */}
+        <section id="demo" className="px-4 py-24 sm:px-6">
           <div className="mx-auto max-w-7xl">
             <SectionLabel number="04" label="Demo interactiva" />
-            
-            <div className="grid gap-12 rounded-[3rem] border-2 border-stone-200/80 bg-white p-6 shadow-[0_30px_120px_rgba(68,47,31,0.15)] lg:grid-cols-[1fr_0.85fr] lg:p-12">
-              <div className="overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#1a1410] to-[#0f0a07] p-8 text-white shadow-2xl">
-                <div className="mb-8 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3.5 w-3.5 rounded-full bg-red-400/90" />
-                    <span className="h-3.5 w-3.5 rounded-full bg-yellow-400/90" />
-                    <span className="h-3.5 w-3.5 rounded-full bg-green-400/90" />
-                  </div>
-                  <span className="text-sm text-white/30">life-os.app</span>
-                </div>
-                <ProductScene />
+
+            <div className="grid gap-10 overflow-hidden rounded-[2rem] border border-white/[0.07] bg-white/[0.02] p-5 lg:grid-cols-[1fr_0.85fr] lg:p-10">
+              <div className="overflow-hidden rounded-[1.5rem] bg-[#0a0705] p-5">
+                <DashboardPreview />
               </div>
-              
-              <div className="flex flex-col justify-center p-6 lg:p-8">
-                <motion.span 
-                  initial={{ opacity: 0, scale: 0.8 }}
+
+              <div className="flex flex-col justify-center p-2 lg:p-4">
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="mb-6 inline-flex w-fit items-center gap-2 rounded-full bg-gradient-to-r from-orange-50 to-orange-100/50 px-5 py-2.5 text-sm font-bold text-[#ff6b35] shadow-md"
+                  className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-[#ff6b35]/25 bg-[#ff6b35]/10 px-4 py-2 text-[11px] font-bold text-[#ff8c5a]"
                 >
-                  <Play size={16} fill="currentColor" />
+                  <span className="relative flex h-[7px] w-[7px]">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff6b35] opacity-75" />
+                    <span className="relative inline-flex h-[7px] w-[7px] rounded-full bg-[#ff6b35]" />
+                  </span>
                   Mockup animado
                 </motion.span>
-                
-                <motion.h2 
-                  initial={{ opacity: 0, y: 30 }}
+
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
-                  className="text-4xl font-black text-stone-950 sm:text-5xl"
+                  className="text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl"
                 >
-                  Mira cómo una semana deja de ser una lista y se vuelve un <GradientText>sistema</GradientText>.
+                  Una semana que deja de ser una lista y se vuelve un{" "}
+                  <GradientText>sistema</GradientText>.
                 </motion.h2>
-                
-                <motion.p 
+
+                <motion.p
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.1 }}
-                  className="mt-8 text-xl leading-9 text-stone-600"
+                  className="mt-5 text-base leading-8 text-white/40"
                 >
-                  La demo visual muestra el flujo central: rutina base, métricas diarias y módulos que alimentan tu avance semana a semana.
+                  La demo visual muestra el flujo central: rutina base, métricas diarias y
+                  módulos que alimentan tu avance semana a semana.
                 </motion.p>
-                
-                <div className="mt-10 grid gap-5">
+
+                <div className="mt-8 grid gap-3">
                   {[
-                    { icon: TimerReset, text: "Bloques fijos para trabajo, estudio y entrenamiento.", color: "bg-gradient-to-br from-blue-500 to-blue-600" },
-                    { icon: Moon, text: "Diagnóstico de sueño y recuperación personalizado.", color: "bg-gradient-to-br from-indigo-500 to-indigo-600" },
-                    { icon: ShieldCheck, text: "Finanzas y metas con prioridades claras y visibles.", color: "bg-gradient-to-br from-emerald-500 to-emerald-600" },
+                    { icon: TimerReset, text: "Bloques fijos para trabajo, estudio y entrenamiento.", color: "bg-blue-500/10 text-blue-400" },
+                    { icon: Moon, text: "Diagnóstico de sueño y recuperación personalizado.", color: "bg-indigo-500/10 text-indigo-400" },
+                    { icon: ShieldCheck, text: "Finanzas y metas con prioridades claras y visibles.", color: "bg-emerald-500/10 text-emerald-400" },
                   ].map((item, i) => (
-                    <motion.div 
-                      key={item.text} 
-                      initial={{ opacity: 0, x: 30 }}
+                    <motion.div
+                      key={item.text}
+                      initial={{ opacity: 0, x: 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: i * 0.15, duration: 0.6 }}
-                      whileHover={{ x: 8, scale: 1.02 }}
-                      className="group flex items-center gap-5 rounded-2xl bg-gradient-to-br from-stone-50 to-stone-100/50 p-5 transition-all hover:shadow-lg"
+                      transition={{ delay: i * 0.12 }}
+                      className="group flex items-center gap-4 rounded-xl bg-white/[0.03] p-3.5 transition-colors hover:bg-white/[0.06]"
                     >
-                      <span className={cn("flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-white shadow-lg transition-transform group-hover:scale-110 group-hover:rotate-6", item.color)}>
-                        <item.icon size={22} />
+                      <span
+                        className={cn(
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-110",
+                          item.color
+                        )}
+                      >
+                        <item.icon size={17} />
                       </span>
-                      <span className="text-lg font-bold text-stone-800">{item.text}</span>
+                      <span className="text-sm font-semibold text-white/60">{item.text}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -920,167 +1063,166 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
           </div>
         </section>
 
-        {/* ─── TESTIMONIALS ─────────────────────────────────────── */}
-        <section className="px-4 py-32 sm:px-6">
-          <div className="mx-auto max-w-7xl">
-            <SectionLabel number="05" label="Sistema" />
-            <motion.div 
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
-              className="grid gap-5 rounded-[3rem] border-2 border-stone-200/80 bg-gradient-to-br from-[#1a1410] to-[#0f0a07] p-10 text-white shadow-[0_30px_100px_rgba(0,0,0,0.3)] sm:grid-cols-3"
-            >
-              {stats.map(({ value, label, icon: Icon }, i) => (
-                <motion.div 
-                  key={label} 
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.6 }}
-                  whileHover={{ scale: 1.05, y: -4 }}
-                  className="group rounded-3xl bg-white/[0.08] p-8 text-center transition-all hover:bg-white/[0.12] hover:shadow-2xl"
-                >
-                  <Icon size={28} className="mx-auto mb-4 text-[#ff6b35]" />
-                  <p className="text-4xl font-black"><AnimatedCounter value={value} /></p>
-                  <p className="mt-2 text-base text-white/60">{label}</p>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
+        {/* ─── CTA ────────────────────────────────────────────────────────── */}
+        <section className="px-4 pb-16 pt-8 sm:px-6">
+          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#ff6b35] via-orange-500 to-amber-500 p-10 sm:p-16 lg:p-20">
+            {/* Grid overlay */}
+            <div
+              className="absolute inset-0 opacity-[0.07]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)",
+                backgroundSize: "40px 40px",
+              }}
+            />
+            {/* Radial glow */}
+            <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/[0.12] blur-3xl" />
 
-        {/* ─── CTA ──────────────────────────────────────────────── */}
-        <section id="download" className="px-4 pb-20 pt-32 sm:px-6">
-          <div className="mx-auto max-w-7xl overflow-hidden rounded-[3.5rem] bg-gradient-to-br from-[#ff6b35] via-orange-500 to-amber-500 p-12 text-white shadow-[0_50px_150px_rgba(255,107,53,0.4)] sm:p-20 lg:p-24">
-            <div className="grid gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            <div className="relative grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
               <div>
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="mb-6 text-base font-black uppercase tracking-wider text-white/80"
+                  className="mb-4 text-[11px] font-black uppercase tracking-widest text-white/60"
                 >
                   Empieza hoy
                 </motion.p>
-                
-                <motion.h2 
-                  initial={{ opacity: 0, y: 30 }}
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
-                  className="text-balance text-5xl font-black sm:text-6xl lg:text-7xl"
+                  className="text-balance text-5xl font-black leading-[0.93] tracking-tight text-white sm:text-6xl lg:text-7xl"
                 >
-                  Descarga la app o accede a tu cuenta existente.
+                  Descarga.<br />
+                  Configura.<br />
+                  Avanza.
                 </motion.h2>
-                
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.1 }}
-                  className="mt-8 max-w-2xl text-xl leading-9 text-white/90"
+                  className="mt-6 max-w-md text-lg leading-8 text-white/70"
                 >
-                  Life OS está diseñado para funcionar como tu centro personal: móvil para capturar, web para revisar y ajustar.
+                  Life OS está diseñado para funcionar como tu centro personal: móvil para
+                  capturar, web para revisar y ajustar.
                 </motion.p>
-                
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="mt-5 text-base font-bold text-white/70"
+                  className="mt-3 text-sm font-semibold text-white/50"
                 >
                   APK disponible para Android. Próximamente en Play Store y iOS.
                 </motion.p>
-                
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.3 }}
-                  className="mt-12 flex flex-col gap-5 sm:flex-row"
+                  className="mt-10 flex flex-col gap-3 sm:flex-row"
                 >
-                  <a href={DOWNLOAD_URL} className="group inline-flex min-h-16 items-center justify-center gap-3 overflow-hidden rounded-full bg-white px-10 py-5 text-base font-black text-stone-950 shadow-2xl transition-all hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(0,0,0,0.3)]">
-                    <Smartphone size={22} />
+                  <a
+                    href={DOWNLOAD_URL}
+                    className="group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-full bg-white px-8 py-4 text-sm font-black text-[#c94c1e] shadow-xl transition-all hover:-translate-y-0.5 hover:shadow-2xl"
+                  >
+                    <Smartphone size={20} />
                     Descargar APK
-                    <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                    <ArrowRight
+                      size={16}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
                   </a>
-                  <button onClick={onAccess} className="inline-flex min-h-16 items-center justify-center gap-3 rounded-full border-2 border-white/40 px-10 py-5 text-base font-black text-white transition-all hover:-translate-y-1 hover:bg-white/10 hover:border-white/60 hover:shadow-xl">
+                  <button
+                    onClick={onAccess}
+                    className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border-2 border-white/30 px-8 py-4 text-sm font-black text-white transition-all hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/10"
+                  >
                     Acceder
-                    <ArrowRight size={18} />
+                    <ArrowRight size={16} />
                   </button>
                 </motion.div>
               </div>
 
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, rotate: 3 }}
                 whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
                 viewport={{ once: true }}
-                transition={{ type: "spring", stiffness: 80, duration: 0.8 }}
-                className="relative rounded-[2.5rem] bg-white/15 p-8 backdrop-blur-xl shadow-2xl"
+                transition={{ type: "spring", stiffness: 80 }}
+                className="relative rounded-[2rem] bg-white/10 p-5 backdrop-blur-xl"
               >
-                <div className="rounded-[2rem] bg-white p-8 text-stone-950 shadow-2xl">
-                  <div className="flex items-center gap-5">
-                    <span className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-stone-950 to-stone-800 text-white shadow-xl">
-                      <Smartphone size={30} />
+                <div className="rounded-[1.5rem] bg-white p-7 text-stone-950 shadow-2xl">
+                  <div className="flex items-center gap-4">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-stone-950 text-white shadow-lg">
+                      <Smartphone size={26} />
                     </span>
                     <div>
-                      <p className="text-2xl font-black">Life OS Mobile</p>
-                      <p className="text-base text-stone-500">APK disponible para Android</p>
+                      <p className="text-lg font-black">Life OS Mobile</p>
+                      <p className="text-sm text-stone-500">APK disponible para Android</p>
                     </div>
                   </div>
-                  
-                  <div className="mt-8 grid grid-cols-5 gap-3">
+
+                  {/* QR pattern */}
+                  <div className="mt-6 grid grid-cols-5 gap-2">
                     {Array.from({ length: 25 }).map((_, index) => (
                       <motion.span
                         key={index}
                         initial={{ opacity: 0, scale: 0 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ delay: index * 0.03 }}
+                        transition={{ delay: index * 0.015 }}
                         className={cn(
-                          "aspect-square rounded-xl",
-                          [0, 2, 4, 6, 7, 10, 12, 13, 16, 18, 19, 20, 22, 24].includes(index) 
-                            ? "bg-gradient-to-br from-stone-900 to-stone-700 shadow-md" 
+                          "aspect-square rounded-lg",
+                          [0, 2, 4, 6, 7, 10, 12, 13, 16, 18, 19, 20, 22, 24].includes(
+                            index
+                          )
+                            ? "bg-stone-900"
                             : "bg-stone-100"
                         )}
                       />
                     ))}
                   </div>
-                  
-                  <div className="mt-6 flex items-center gap-3 rounded-2xl bg-gradient-to-br from-stone-50 to-stone-100/50 p-5 shadow-md">
-                    <CheckCircle2 size={18} className="text-emerald-500" />
-                    <p className="text-base font-bold text-stone-700">
+
+                  <div className="mt-5 flex items-center gap-2 rounded-xl bg-stone-50 p-4">
+                    <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />
+                    <p className="text-sm font-semibold text-stone-600">
                       Descarga directa del APK. Sin Play Store.
                     </p>
                   </div>
                 </div>
-                
-                {/* Floating elements */}
-                <FloatingElement delay={0} className="absolute -right-5 -top-5">
-                  <div className="rounded-2xl bg-white p-4 shadow-2xl">
-                    <Flame size={24} className="text-[#ff6b35]" />
-                  </div>
-                </FloatingElement>
+
+                {/* Floating badge */}
+                <motion.div
+                  animate={{ y: [0, -7, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute -right-4 -top-4 rounded-xl bg-white p-3 shadow-xl"
+                >
+                  <Zap size={20} className="text-[#ff6b35]" />
+                </motion.div>
               </motion.div>
             </div>
           </div>
         </section>
       </main>
 
-      {/* ─── FOOTER ───────────────────────────────────────────── */}
-      <footer className="px-4 py-12 sm:px-6">
-        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 border-t-2 border-stone-200/80 pt-12 text-base text-stone-600 sm:flex-row">
-          <div className="flex items-center gap-3">
-            <img src={iconLight} alt="" className="h-6 w-auto opacity-60" />
-            <p className="font-semibold">© 2026 Life OS. Sistema personal para vivir con más claridad.</p>
+      {/* ─── FOOTER ──────────────────────────────────────────────────────── */}
+      <footer className="px-4 py-10 sm:px-6">
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 border-t border-white/[0.06] pt-10 text-sm text-white/25 sm:flex-row">
+          <div className="flex items-center gap-2.5">
+            <img src={iconLight} alt="" className="h-5 w-auto opacity-30" />
+            <p>© 2026 Life OS. Sistema personal para vivir con más claridad.</p>
           </div>
-          <div className="flex gap-8">
-            <a href="#que-es" className="font-semibold transition-colors hover:text-stone-950">Producto</a>
-            <a href={DOWNLOAD_URL} className="font-semibold transition-colors hover:text-stone-950">Descargar</a>
-            <button onClick={onAccess} className="font-semibold transition-colors hover:text-stone-950">Acceder</button>
+          <div className="flex gap-6">
+            <a href="#que-es" className="transition-colors hover:text-white/70">
+              Producto
+            </a>
+            <a href={DOWNLOAD_URL} className="transition-colors hover:text-white/70">
+              Descargar
+            </a>
+            <button
+              onClick={onAccess}
+              className="transition-colors hover:text-white/70"
+            >
+              Acceder
+            </button>
           </div>
         </div>
       </footer>
