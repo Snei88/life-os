@@ -48,7 +48,7 @@ type LandingPageProps = {
 };
 
 const DOWNLOAD_URL =
-  "https://download1476.mediafire.com/zkogtzazx3lgMzuMNLIFES8obFJzXJuLO7OuO7IdAJ0qyC1LHlLWo0xAJ3ezto0kXFc7H7TBP0rJAblS5eXkmW4SkCNGY1FCm5ppp2LTuILaogE16nm53skGrYsLvzdEfQa4U6za9v0qboSfHvITEoCAVUGviY0yNjupuF_H8zPoWw/vrnayutsilmxu3t/LifeOS.apk
+  "https://www.mediafire.com/file/vrnayutsilmxu3t/LifeOS.apk/file";
 
 // ─── DATA ──────────────────────────────────────────────────────────────────────
 
@@ -584,7 +584,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
             "mx-auto flex max-w-7xl items-center justify-between rounded-[1.25rem] border px-3 py-2.5 transition-all duration-500 md:rounded-2xl md:px-5 md:py-3",
             scrolled
               ? "border-white/10 bg-[#0d0a08]/90 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
-              : "border-white/[0.06] bg-white/[0.04] backdrop-blur-xl"
+              : "border-white/10 bg-[#0d0a08]/88 shadow-[0_8px_28px_rgba(0,0,0,0.35)] backdrop-blur-xl md:border-white/[0.06] md:bg-white/[0.04] md:shadow-none"
           )}
         >
           <a href="#" className="flex items-center gap-3">
