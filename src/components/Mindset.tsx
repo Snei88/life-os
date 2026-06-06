@@ -11,7 +11,6 @@ import { useData } from "../hooks/useData";
 import { cn } from "../lib/utils";
 import { getLogicalDate } from "../lib/dateUtils";
 import { JournalEntry } from "../types";
-import { AIModuleStrip } from "./AIModuleStrip";
 
 interface HistoryRecord {
   date: string;
@@ -279,17 +278,6 @@ const Mindset: React.FC = () => {
       </div>
 
       {/* Indicador práctica completa */}
-      <AIModuleStrip
-        moduleId="mindset"
-        title="Mindset"
-        subtitle="La IA puede detectar bloqueos, leer tu practica diaria y conectar tu estado mental con disciplina, metas y finanzas."
-        prompts={[
-          "Analiza mi mindset y dime que patron ves.",
-          "Ayudame a escribir una reflexion util para hoy.",
-          "Conecta mi mindset con los otros modulos y dime que corregir.",
-        ]}
-      />
-
       <PracticeIndicator
         affirmation={affirmation}
         gratitude={gratitude}

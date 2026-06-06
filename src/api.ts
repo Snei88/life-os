@@ -33,7 +33,26 @@ export const api = {
   login: (email: string, password: string) =>
     post("/auth/login", { email, password }),
 
-  register: (data: { name: string; email: string; password: string }) =>
+  register: (data: {
+    name: string;
+    email: string;
+    password: string;
+    age?: number;
+    gender?: string;
+    weight?: number;
+    height?: number;
+    bodyGoal?: string;
+    activityLevel?: string;
+    bmi?: number;
+    bmiStatus?: string;
+    basalMetabolicRate?: number;
+    dailyEnergyExpenditure?: number;
+    calorieTarget?: number;
+    gymTargetKcal?: number;
+    restTargetKcal?: number;
+    proteinTarget?: number;
+    waterTargetLiters?: number;
+  }) =>
     post("/auth/register", data),
 
   forgotPassword: (email: string) =>
@@ -188,13 +207,4 @@ export const api = {
 
   // Edit meal
   updateMeal: (id: string, meal: Partial<Meal>) => put(`/meals/${id}`, meal),
-
-  // AI Copilot
-  aiChat: (data: {
-    messages: Array<{ role: "user" | "assistant"; content: string }>;
-    activeTab?: string;
-    learningMemory?: unknown;
-  }) =>
-    post("/ai/chat", data),
-  aiExecute: (action: Record<string, unknown>) => post("/ai/execute", { action }),
 };

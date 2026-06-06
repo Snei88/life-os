@@ -1,0 +1,14 @@
+ALTER TABLE public.users
+  ADD COLUMN IF NOT EXISTS sleep_bedtime TIME,
+  ADD COLUMN IF NOT EXISTS sleep_wake_time TIME,
+  ADD COLUMN IF NOT EXISTS sleep_hours NUMERIC(3,1),
+  ADD COLUMN IF NOT EXISTS sleep_quality_score NUMERIC(3,1),
+  ADD COLUMN IF NOT EXISTS muscle_recovery VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS cognitive_recovery VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS sleep_recommendation TEXT,
+  ADD COLUMN IF NOT EXISTS work_type VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS work_start_time TIME,
+  ADD COLUMN IF NOT EXISTS work_end_time TIME,
+  ADD COLUMN IF NOT EXISTS work_days INTEGER[] DEFAULT '{1,2,3,4,5}',
+  ADD COLUMN IF NOT EXISTS workout_time_preference VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS daily_free_time VARCHAR(50);

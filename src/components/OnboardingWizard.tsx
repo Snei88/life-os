@@ -28,9 +28,27 @@ interface OnboardingData {
   // Paso 3
   currency: "COP" | "USD" | "EUR";
   monthlyIncome: number;
+  monthlyExpenses: number;
+  currentSavings: number;
+  debtType: "none" | "credit_card" | "consumer" | "student" | "mortgage";
+  debtBalance: number;
+  debtMonthlyPayment: number;
+  financialGoal: "emergency_fund" | "home" | "vehicle" | "travel" | "business" | "retirement" | "investing" | "financial_freedom" | "";
+  financialGoalCost: number;
+  financialGoalMonthlySaving: number;
+  financialGoalHorizon: "under_1y" | "1_3y" | "3_5y" | "over_5y" | "";
+  riskProfile: "conservative" | "moderate" | "aggressive" | "";
   emergencyFundGoal: number;
   
   // Paso 4
+  sleepBedtime: string;
+  sleepWakeTime: string;
+  workType: "work" | "study" | "both" | "";
+  workStartTime: string;
+  workEndTime: string;
+  workDays: number[];
+  workoutTimePreference: "morning" | "afternoon" | "night" | "fixed" | "";
+  dailyFreeTime: "30m" | "1h" | "2h" | "3h_plus" | "";
   gymDays: number[];
   gymTime: string;
   
@@ -48,7 +66,25 @@ const initialData: OnboardingData = {
   activityLevel: "",
   currency: "COP",
   monthlyIncome: 0,
+  monthlyExpenses: 0,
+  currentSavings: 0,
+  debtType: "none",
+  debtBalance: 0,
+  debtMonthlyPayment: 0,
+  financialGoal: "",
+  financialGoalCost: 0,
+  financialGoalMonthlySaving: 0,
+  financialGoalHorizon: "",
+  riskProfile: "",
   emergencyFundGoal: 0,
+  sleepBedtime: "23:00",
+  sleepWakeTime: "06:00",
+  workType: "work",
+  workStartTime: "08:00",
+  workEndTime: "17:00",
+  workDays: [1, 2, 3, 4, 5],
+  workoutTimePreference: "fixed",
+  dailyFreeTime: "1h",
   gymDays: [1, 2, 3, 4, 5], // Lunes a Viernes default
   gymTime: "18:00",
   mainGoal: "",
@@ -116,6 +152,76 @@ function calculateMetrics(data: OnboardingData) {
   };
 }
 
+function calculateFinancialProfile(data: OnboardingData) {
+  const freeCashflow = data.monthlyIncome - data.monthlyExpenses;
+  const savingsRate = data.monthlyIncome > 0 ? (freeCashflow / data.monthlyIncome) * 100 : 0;
+  const emergencyGoal = data.monthlyExpenses > 0 ? data.monthlyExpenses * 6 : data.emergencyFundGoal;
+  const emergencyProgress = emergencyGoal > 0 ? Math.min((data.currentSavings / emergencyGoal) * 100, 100) : 0;
+  const debtPaymentRate = data.monthlyIncome > 0 ? (data.debtMonthlyPayment / data.monthlyIncome) * 100 : 0;
+  const health =
+    freeCashflow < 0 ? "Crítica" : savingsRate < 10 ? "Riesgosa" : savingsRate < 20 ? "Buena" : "Excelente";
+  const debtLevel =
+    data.debtBalance <= 0 ? "Ninguno" : debtPaymentRate < 10 ? "Bajo" : debtPaymentRate < 25 ? "Medio" : "Alto";
+  const priority =
+    data.debtType === "credit_card" && data.debtBalance > 0
+      ? "Eliminar deuda de tarjeta de crédito"
+      : emergencyProgress < 100
+        ? "Completar fondo de emergencia"
+        : data.debtBalance > 0
+          ? "Reducir deudas pendientes"
+          : "Comenzar o aumentar inversiones";
+  const score = Math.max(
+    0,
+    Math.min(
+      10,
+      Number(
+        (
+          5 +
+          Math.min(savingsRate, 30) / 6 +
+          Math.min(emergencyProgress, 100) / 25 -
+          (debtLevel === "Alto" ? 3 : debtLevel === "Medio" ? 1.5 : 0)
+        ).toFixed(1),
+      ),
+    ),
+  );
+  const goalMonths =
+    data.financialGoalCost > 0 && data.financialGoalMonthlySaving > 0
+      ? Math.ceil(data.financialGoalCost / data.financialGoalMonthlySaving)
+      : null;
+
+  return {
+    freeCashflow,
+    savingsRate,
+    emergencyGoal,
+    emergencyProgress,
+    debtLevel,
+    health,
+    priority,
+    score,
+    goalMonths,
+  };
+}
+
+function calculateRoutineProfile(data: OnboardingData) {
+  const toMinutes = (time: string) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+  const bedtime = toMinutes(data.sleepBedtime || "23:00");
+  const wake = toMinutes(data.sleepWakeTime || "06:00");
+  const sleepMinutes = wake > bedtime ? wake - bedtime : 1440 - bedtime + wake;
+  const sleepHours = Number((sleepMinutes / 60).toFixed(1));
+  const score = sleepHours >= 7 && sleepHours <= 9 ? 10 : sleepHours >= 6 ? 7 : sleepHours >= 5 ? 4 : 3;
+  const recovery = sleepHours >= 7 ? "Buena" : sleepHours >= 6 ? "Moderada" : "Baja";
+  const risks = sleepHours >= 7 ? [] : [
+    "Menor recuperacion muscular",
+    "Menor concentracion",
+    "Mayor fatiga y hambre durante el dia",
+  ];
+
+  return { sleepHours, score, recovery, risks };
+}
+
 export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<OnboardingData>(initialData);
@@ -131,6 +237,8 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
   }, []);
   
   const metrics = useMemo(() => calculateMetrics(data), [data]);
+  const financialProfile = useMemo(() => calculateFinancialProfile(data), [data]);
+  const routineProfile = useMemo(() => calculateRoutineProfile(data), [data]);
   
   const updateData = (field: keyof OnboardingData, value: any) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -140,8 +248,28 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
     switch (step) {
       case 1: return data.name.length >= 2;
       case 2: return data.weight > 0 && data.height > 0 && data.bodyGoal && data.activityLevel;
-      case 3: return data.currency && (data.emergencyFundGoal > 0 || data.monthlyIncome > 0);
-      case 4: return data.gymDays.length > 0 && data.gymTime;
+      case 3:
+        return (
+          !!data.currency &&
+          data.monthlyIncome > 0 &&
+          data.monthlyExpenses >= 0 &&
+          !!data.financialGoal &&
+          !!data.financialGoalHorizon &&
+          !!data.riskProfile
+        );
+      case 4:
+        return (
+          !!data.sleepBedtime &&
+          !!data.sleepWakeTime &&
+          !!data.workType &&
+          !!data.workStartTime &&
+          !!data.workEndTime &&
+          data.workDays.length > 0 &&
+          !!data.workoutTimePreference &&
+          !!data.dailyFreeTime &&
+          data.gymDays.length > 0 &&
+          !!data.gymTime
+        );
       case 5: return data.mainGoal.length >= 5;
       default: return true;
     }
@@ -166,7 +294,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
     try {
       // Calcular valores finales
       const finalMetrics = calculateMetrics(data);
-      const emergencyGoal = data.emergencyFundGoal || (data.monthlyIncome * 6);
+      const emergencyGoal = data.emergencyFundGoal || financialProfile.emergencyGoal || (data.monthlyIncome * 6);
       
       // 1. Actualizar perfil completo
       await api.updateProfile({
@@ -181,11 +309,44 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
         restTargetKcal: finalMetrics?.restTarget || 1700,
         proteinTarget: finalMetrics?.proteinTarget || 126,
         currency: data.currency,
+        monthlyIncome: data.monthlyIncome,
+        monthlyExpenses: data.monthlyExpenses,
+        currentSavings: data.currentSavings,
+        debtType: data.debtType,
+        debtBalance: data.debtBalance,
+        debtMonthlyPayment: data.debtMonthlyPayment,
+        financialGoal: data.financialGoal,
+        financialGoalCost: data.financialGoalCost,
+        financialGoalMonthlySaving: data.financialGoalMonthlySaving,
+        financialGoalHorizon: data.financialGoalHorizon,
+        riskProfile: data.riskProfile,
+        sleepBedtime: data.sleepBedtime,
+        sleepWakeTime: data.sleepWakeTime,
+        workType: data.workType,
+        workStartTime: data.workStartTime,
+        workEndTime: data.workEndTime,
+        workDays: data.workDays,
+        workoutTimePreference: data.workoutTimePreference,
+        dailyFreeTime: data.dailyFreeTime,
         savingsGoal: 25,
         emergencyFundGoal: emergencyGoal,
         mainGoal: data.mainGoal,
       });
       
+      // 2. Crear bloques fijos de trabajo/estudio
+      await Promise.all(data.workDays.map(day =>
+        api.addScheduleEvent({
+          dayOfWeek: day,
+          time: data.workStartTime,
+          endTime: data.workEndTime,
+          title: data.workType === "study" ? "Estudio / Clases" : data.workType === "both" ? "Trabajo / Estudio" : "Trabajo",
+          type: "work",
+          color: "blue",
+          isFixed: true,
+          description: "Bloque base de trabajo o estudio"
+        })
+      ));
+
       // 2. Crear eventos de gym en la rutina semanal
       await Promise.all(data.gymDays.map(day => 
         api.addScheduleEvent({
@@ -541,7 +702,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <label className="text-xs font-bold text-white/40 uppercase tracking-widest">
-                        Ingreso mensual aproximado (opcional)
+                        Ingreso mensual *
                       </label>
                       <div className="relative group">
                         <Info size={13} className="text-white/30 hover:text-yellow-400 cursor-help transition-colors" />
@@ -575,6 +736,178 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
                     </p>
                   </div>
                   
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <label className="text-xs font-bold text-white/40 uppercase tracking-widest">
+                        Gastos, ahorros y deudas
+                      </label>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input
+                        type="number"
+                        value={data.monthlyExpenses || ""}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value) || 0;
+                          updateData("monthlyExpenses", val);
+                          updateData("emergencyFundGoal", val * 6);
+                        }}
+                        placeholder="Gastos mensuales totales"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-yellow-600 transition-all"
+                      />
+                      <input
+                        type="number"
+                        value={data.currentSavings || ""}
+                        onChange={(e) => updateData("currentSavings", parseFloat(e.target.value) || 0)}
+                        placeholder="Ahorros actuales"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-yellow-600 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold text-white/40 uppercase tracking-widest block">
+                      Deudas
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                      {[
+                        { key: "none", label: "Ninguna" },
+                        { key: "credit_card", label: "Tarjeta" },
+                        { key: "consumer", label: "Consumo" },
+                        { key: "student", label: "Educativo" },
+                        { key: "mortgage", label: "Hipoteca" },
+                      ].map((debt) => (
+                        <button
+                          key={debt.key}
+                          onClick={() => updateData("debtType", debt.key)}
+                          className={cn(
+                            "rounded-xl border px-3 py-3 text-xs font-bold transition-all",
+                            data.debtType === debt.key
+                              ? "bg-yellow-500/20 border-yellow-500 text-yellow-300"
+                              : "bg-white/5 border-white/10 text-white/45 hover:border-white/30",
+                          )}
+                        >
+                          {debt.label}
+                        </button>
+                      ))}
+                    </div>
+                    {data.debtType !== "none" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="number"
+                          value={data.debtBalance || ""}
+                          onChange={(e) => updateData("debtBalance", parseFloat(e.target.value) || 0)}
+                          placeholder="Saldo pendiente"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-yellow-600 transition-all"
+                        />
+                        <input
+                          type="number"
+                          value={data.debtMonthlyPayment || ""}
+                          onChange={(e) => updateData("debtMonthlyPayment", parseFloat(e.target.value) || 0)}
+                          placeholder="Cuota mensual"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-yellow-600 transition-all"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <select
+                      value={data.financialGoal}
+                      onChange={(e) => updateData("financialGoal", e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-yellow-600 transition-all"
+                    >
+                      <option value="">Objetivo financiero principal</option>
+                      <option value="emergency_fund">Fondo de emergencia</option>
+                      <option value="home">Comprar vivienda</option>
+                      <option value="vehicle">Comprar vehiculo</option>
+                      <option value="travel">Viajar</option>
+                      <option value="business">Crear empresa</option>
+                      <option value="retirement">Jubilacion</option>
+                      <option value="investing">Invertir</option>
+                      <option value="financial_freedom">Libertad financiera</option>
+                    </select>
+                    <select
+                      value={data.financialGoalHorizon}
+                      onChange={(e) => updateData("financialGoalHorizon", e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-yellow-600 transition-all"
+                    >
+                      <option value="">Horizonte temporal</option>
+                      <option value="under_1y">Menos de 1 año</option>
+                      <option value="1_3y">1 a 3 años</option>
+                      <option value="3_5y">3 a 5 años</option>
+                      <option value="over_5y">Más de 5 años</option>
+                    </select>
+                    <input
+                      type="number"
+                      value={data.financialGoalCost || ""}
+                      onChange={(e) => updateData("financialGoalCost", parseFloat(e.target.value) || 0)}
+                      placeholder="Costo de la meta"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-yellow-600 transition-all"
+                    />
+                    <input
+                      type="number"
+                      value={data.financialGoalMonthlySaving || ""}
+                      onChange={(e) => updateData("financialGoalMonthlySaving", parseFloat(e.target.value) || 0)}
+                      placeholder="Ahorro mensual para meta"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-yellow-600 transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-3 block">
+                      Perfil de riesgo *
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { key: "conservative", label: "Conservador" },
+                        { key: "moderate", label: "Moderado" },
+                        { key: "aggressive", label: "Agresivo" },
+                      ].map((risk) => (
+                        <button
+                          key={risk.key}
+                          onClick={() => updateData("riskProfile", risk.key)}
+                          className={cn(
+                            "rounded-xl border p-3 text-sm font-bold transition-all",
+                            data.riskProfile === risk.key
+                              ? "bg-yellow-500/20 border-yellow-500 text-yellow-300"
+                              : "bg-white/5 border-white/10 text-white/45 hover:border-white/30",
+                          )}
+                        >
+                          {risk.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-4 space-y-3">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                      <div>
+                        <p className="text-2xl font-black text-white">{financialProfile.score}/10</p>
+                        <p className="text-[10px] uppercase text-white/40">salud financiera</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-green-400">{financialProfile.savingsRate.toFixed(1)}%</p>
+                        <p className="text-[10px] uppercase text-white/40">tasa ahorro</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-yellow-300">{financialProfile.emergencyProgress.toFixed(0)}%</p>
+                        <p className="text-[10px] uppercase text-white/40">fondo emergencia</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-blue-300">{financialProfile.debtLevel}</p>
+                        <p className="text-[10px] uppercase text-white/40">endeudamiento</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-white/65">
+                      Estado: <strong>{financialProfile.health}</strong>. Prioridad #1: {financialProfile.priority}.
+                    </p>
+                    {financialProfile.goalMonths ? (
+                      <p className="text-xs text-white/45">
+                        Con tu ahorro mensual para la meta, la alcanzarías en aprox. {(financialProfile.goalMonths / 12).toFixed(1)} años.
+                      </p>
+                    ) : null}
+                  </div>
+
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <label className="text-xs font-bold text-white/40 uppercase tracking-widest">
@@ -616,8 +949,165 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-purple-500/10 text-purple-500 mb-4">
                       <Dumbbell size={32} />
                     </div>
-                    <h2 className="text-2xl font-bold mb-2">Tu Rutina Semanal</h2>
-                    <p className="text-white/50">Configura tus días de entrenamiento</p>
+                    <h2 className="text-2xl font-bold mb-2">Rutina y Horarios Base</h2>
+                    <p className="text-white/50">Define sueño, trabajo, entrenamiento y tiempo libre</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                        Hora de dormir *
+                      </label>
+                      <input
+                        type="time"
+                        value={data.sleepBedtime}
+                        onChange={(e) => updateData("sleepBedtime", e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-purple-600 transition-all text-lg"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                        Hora de despertar *
+                      </label>
+                      <input
+                        type="time"
+                        value={data.sleepWakeTime}
+                        onChange={(e) => updateData("sleepWakeTime", e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-purple-600 transition-all text-lg"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-3 p-4 bg-purple-500/5 border border-purple-500/20 rounded-2xl">
+                    <div>
+                      <p className="text-2xl font-black text-purple-300">{routineProfile.sleepHours}h</p>
+                      <p className="text-[10px] uppercase text-white/40">sueño</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-black text-blue-300">{routineProfile.score}/10</p>
+                      <p className="text-[10px] uppercase text-white/40">calidad</p>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-black text-green-300">{routineProfile.recovery}</p>
+                      <p className="text-[10px] uppercase text-white/40">recuperación</p>
+                    </div>
+                    {routineProfile.risks.length > 0 && (
+                      <p className="col-span-3 text-xs text-white/50">
+                        Alerta: {routineProfile.risks.join(", ")}.
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                      Tipo de bloque principal *
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { label: "Trabajo", value: "work" },
+                        { label: "Estudio", value: "study" },
+                        { label: "Ambos", value: "both" },
+                      ].map(option => (
+                        <button
+                          key={option.value}
+                          onClick={() => updateData("workType", option.value)}
+                          className={cn(
+                            "rounded-xl border px-3 py-3 text-sm font-bold transition-all",
+                            data.workType === option.value
+                              ? "bg-blue-600 border-blue-500 text-white"
+                              : "bg-white/5 border-white/10 text-white/50 hover:border-white/30"
+                          )}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                        Inicio trabajo/estudio *
+                      </label>
+                      <input
+                        type="time"
+                        value={data.workStartTime}
+                        onChange={(e) => updateData("workStartTime", e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-blue-600 transition-all text-lg"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                        Fin trabajo/estudio *
+                      </label>
+                      <input
+                        type="time"
+                        value={data.workEndTime}
+                        onChange={(e) => updateData("workEndTime", e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-blue-600 transition-all text-lg"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-3 block">
+                      Días laborales / clases *
+                    </label>
+                    <div className="grid grid-cols-7 gap-2">
+                      {weekDays.map((day) => (
+                        <button
+                          key={day.value}
+                          onClick={() => {
+                            const updated = data.workDays.includes(day.value)
+                              ? data.workDays.filter(d => d !== day.value)
+                              : [...data.workDays, day.value].sort();
+                            updateData("workDays", updated);
+                          }}
+                          className={cn(
+                            "aspect-square rounded-xl border transition-all flex flex-col items-center justify-center gap-1",
+                            data.workDays.includes(day.value)
+                              ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/30"
+                              : "bg-white/5 border-white/10 text-white/40 hover:border-white/30"
+                          )}
+                        >
+                          <span className="text-xs font-bold">{day.label}</span>
+                          {data.workDays.includes(day.value) && <Check size={14} />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                        Preferencia para entrenar *
+                      </label>
+                      <select
+                        value={data.workoutTimePreference}
+                        onChange={(e) => updateData("workoutTimePreference", e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-purple-600 transition-all text-lg"
+                      >
+                        <option value="morning">Mañana</option>
+                        <option value="afternoon">Tarde</option>
+                        <option value="night">Noche</option>
+                        <option value="fixed">Hora fija</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 block">
+                        Tiempo libre diario *
+                      </label>
+                      <select
+                        value={data.dailyFreeTime}
+                        onChange={(e) => updateData("dailyFreeTime", e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 outline-none focus:border-purple-600 transition-all text-lg"
+                      >
+                        <option value="30m">30 min</option>
+                        <option value="1h">1 hora</option>
+                        <option value="2h">2 horas</option>
+                        <option value="3h_plus">3 horas+</option>
+                      </select>
+                    </div>
                   </div>
                   
                   <div>
@@ -736,15 +1226,24 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
               disabled={step === 1}
               className={cn(
                 "flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all",
-                step === 1 
-                  ? "opacity-0 pointer-events-none" 
+                step === 1
+                  ? "opacity-0 pointer-events-none"
                   : "text-white/60 hover:text-white hover:bg-white/5"
               )}
             >
               <ChevronLeft size={20} />
               Anterior
             </button>
-            
+
+            {step === 3 && (
+              <button
+                onClick={handleNext}
+                className="text-white/35 hover:text-white/60 text-sm font-medium transition-colors px-4 py-2 rounded-xl"
+              >
+                Saltar este paso
+              </button>
+            )}
+
             {step < 5 ? (
               <button
                 onClick={handleNext}

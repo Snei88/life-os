@@ -17,14 +17,6 @@ export const GUIDED_TOUR_STEPS: GuidedTourStep[] = [
     accent: "orange",
   },
   {
-    id: "ai-recommendations",
-    tab: "ai-recommendations",
-    targetId: "tour-ai-recommendations",
-    title: "IA",
-    description: "Este módulo te da recomendaciones accionables basadas en tus registros y tu progreso reciente.",
-    accent: "orange",
-  },
-  {
     id: "habits",
     tab: "habits",
     targetId: "tour-habits",

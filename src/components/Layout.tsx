@@ -14,7 +14,6 @@ import {
   LogOut,
   Menu,
   X,
-  Sparkles,
   Settings
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
@@ -42,7 +41,6 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, forc
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "ai-recommendations", label: "IA", icon: Sparkles },
     { id: "habits", label: "Hábitos", icon: CheckCircle2 },
     { id: "nutrition", label: "Nutrición", icon: Utensils },
     { id: "gym", label: "Gym", icon: Dumbbell },

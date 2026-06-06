@@ -4,14 +4,52 @@ export interface UserProfile {
   email: string;
   name: string;
   createdAt: string;
+  age?: number;
   birthDate?: string;
   gender?: "male" | "female" | "other" | string;
   weight?: number;
   height?: number;
   bodyGoal?: "lose_fat" | "recomp" | "gain_muscle" | string;
   activityLevel?: "sedentary" | "moderate" | "active" | "very_active" | string;
+  bmi?: number;
+  bmiStatus?: string;
+  basalMetabolicRate?: number;
+  dailyEnergyExpenditure?: number;
+  calorieTarget?: number;
+  waterTargetLiters?: number;
   currency?: "COP" | "USD" | "EUR" | string;
   monthlyIncome?: number;
+  monthlyExpenses?: number;
+  currentSavings?: number;
+  debtType?: string;
+  debtBalance?: number;
+  debtMonthlyPayment?: number;
+  financialGoal?: string;
+  financialGoalCost?: number;
+  financialGoalMonthlySaving?: number;
+  financialGoalHorizon?: string;
+  riskProfile?: string;
+  financialFreeCashflow?: number;
+  financialSavingsRate?: number;
+  recommendedEmergencyFund?: number;
+  emergencyFundProgress?: number;
+  debtLevel?: string;
+  financialHealthStatus?: string;
+  financialHealthScore?: number;
+  financialPriority?: string;
+  sleepBedtime?: string;
+  sleepWakeTime?: string;
+  sleepHours?: number;
+  sleepQualityScore?: number;
+  muscleRecovery?: string;
+  cognitiveRecovery?: string;
+  sleepRecommendation?: string;
+  workType?: string;
+  workStartTime?: string;
+  workEndTime?: string;
+  workDays?: number[];
+  workoutTimePreference?: string;
+  dailyFreeTime?: string;
   gymTargetKcal: number;
   restTargetKcal: number;
   proteinTarget: number;
@@ -264,41 +302,4 @@ export interface TransactionCategory {
   color: string;
   icon: string;
   isActive: boolean;
-}
-
-export interface AICopilotInsight {
-  id: string;
-  module: string;
-  tone: "coach" | "warning" | "opportunity";
-  title: string;
-  summary: string;
-}
-
-export interface AICopilotAction {
-  type: string;
-  module: string;
-  title: string;
-  reason?: string;
-  payload: Record<string, unknown>;
-}
-
-export interface AICopilotFeedbackEntry {
-  actionTitle: string;
-  actionType: string;
-  module: string;
-  outcome: "accepted" | "postponed" | "dismissed";
-  createdAt: string;
-}
-
-export interface AICopilotMessage {
-  role: "user" | "assistant";
-  content: string;
-  createdAt: string;
-}
-
-export interface AICopilotResponse {
-  reply: string;
-  insights: AICopilotInsight[];
-  actions: AICopilotAction[];
-  contextSummary?: Record<string, unknown>;
 }

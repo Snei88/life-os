@@ -7,8 +7,6 @@ import Auth from "./components/Auth";
 import { motion, AnimatePresence } from "motion/react";
 import { GuidedTourProvider, useGuidedTour } from "./hooks/useGuidedTour";
 import { useIsCompact } from "./hooks/useIsCompact";
-import { AICopilotProvider } from "./hooks/useAICopilot";
-import { AICopilotWidget } from "./components/AICopilotWidget";
 
 const Dashboard = lazy(() => import("./components/Dashboard"));
 const Habits = lazy(() => import("./components/Habits"));
@@ -19,7 +17,6 @@ const Routine = lazy(() => import("./components/Routine"));
 const Goals = lazy(() => import("./components/Goals"));
 const Mindset = lazy(() => import("./components/Mindset"));
 const OnboardingWizard = lazy(() => import("./components/OnboardingWizard").then((module) => ({ default: module.OnboardingWizard })));
-const AIRecommendations = lazy(() => import("./components/AIRecommendations").then((module) => ({ default: module.AIRecommendations })));
 const Profile = lazy(() => import("./components/Profile").then((module) => ({ default: module.Profile })));
 
 function ContentFallback() {
@@ -121,7 +118,6 @@ function AppContent() {
         />
       );
       case "mindset": return <Mindset />;
-      case "ai-recommendations": return <AIRecommendations onNavigate={handleNavigate} />;
       case "mi-perfil": return <Profile />;
       default: return <Dashboard onNavigate={handleNavigate} />;
     }
@@ -129,20 +125,17 @@ function AppContent() {
 
   return (
     <GuidedTourProvider userId={profile.id} activeTab={activeTab} setActiveTab={setActiveTab}>
-      <AICopilotProvider activeTab={activeTab}>
-        <AuthenticatedAppLayout
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          handleNavigate={handleNavigate}
-          renderContent={() => (
-            <Suspense fallback={<ContentFallback />}>
-              {renderContent()}
-            </Suspense>
-          )}
-          isCompact={isCompact}
-          contentVersion={contentVersion}
-        />
-      </AICopilotProvider>
+      <AuthenticatedAppLayout
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        renderContent={() => (
+          <Suspense fallback={<ContentFallback />}>
+            {renderContent()}
+          </Suspense>
+        )}
+        isCompact={isCompact}
+        contentVersion={contentVersion}
+      />
     </GuidedTourProvider>
   );
 }
@@ -150,14 +143,12 @@ function AppContent() {
 function AuthenticatedAppLayout({
   activeTab,
   setActiveTab,
-  handleNavigate,
   renderContent,
   isCompact,
   contentVersion,
 }: {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  handleNavigate: (tab: string, action?: string) => void;
   renderContent: () => React.ReactNode;
   isCompact: boolean;
   contentVersion: number;
@@ -165,22 +156,19 @@ function AuthenticatedAppLayout({
   const { isActive } = useGuidedTour();
 
   return (
-    <>
-      <Layout activeTab={activeTab} setActiveTab={setActiveTab} forceSidebarOpen={isActive}>
-        <AnimatePresence mode={isCompact ? "wait" : "popLayout"} initial={false}>
-          <motion.div
-            key={`${activeTab}-${contentVersion}`}
-            initial={isCompact ? { opacity: 0 } : { opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={isCompact ? { opacity: 0 } : { opacity: 0, x: -20 }}
-            transition={{ duration: isCompact ? 0.18 : 0.3, ease: "easeInOut" }}
-          >
-            {renderContent()}
-          </motion.div>
-        </AnimatePresence>
-      </Layout>
-      <AICopilotWidget onNavigate={(tab) => handleNavigate(tab)} />
-    </>
+    <Layout activeTab={activeTab} setActiveTab={setActiveTab} forceSidebarOpen={isActive}>
+      <AnimatePresence mode={isCompact ? "wait" : "popLayout"} initial={false}>
+        <motion.div
+          key={`${activeTab}-${contentVersion}`}
+          initial={isCompact ? { opacity: 0 } : { opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={isCompact ? { opacity: 0 } : { opacity: 0, x: -20 }}
+          transition={{ duration: isCompact ? 0.18 : 0.3, ease: "easeInOut" }}
+        >
+          {renderContent()}
+        </motion.div>
+      </AnimatePresence>
+    </Layout>
   );
 }
 

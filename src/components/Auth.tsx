@@ -71,7 +71,11 @@ const Auth: React.FC = () => {
     setLoading(true);
     setError("");
     try {
-      await api.register({ name: formData.name, email: formData.email, password: formData.password });
+      await api.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
       await login(formData.email, formData.password);
     } catch (err: any) {
       console.error("Error registro:", err);
@@ -134,7 +138,13 @@ const Auth: React.FC = () => {
     setView(newView);
     setError("");
     setSuccess("");
-    setFormData({ name: "", email: "", password: "", confirmPassword: "", resetToken: "" });
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      resetToken: "",
+    });
   };
 
   return (
@@ -147,7 +157,7 @@ const Auth: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-[#0d0d0d]/80 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative z-10"
+        className="w-full max-w-md bg-[#0d0d0d]/80 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative z-10 max-h-[92vh] overflow-y-auto"
       >
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-8">
