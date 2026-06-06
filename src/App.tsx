@@ -4,6 +4,7 @@ import { useAuth } from "./hooks/useAuth";
 import { useTheme } from "./hooks/useTheme";
 import Layout from "./components/Layout";
 import Auth from "./components/Auth";
+import { LandingPage } from "./components/LandingPage";
 import { motion, AnimatePresence } from "motion/react";
 import { GuidedTourProvider, useGuidedTour } from "./hooks/useGuidedTour";
 import { useIsCompact } from "./hooks/useIsCompact";
@@ -35,6 +36,7 @@ function AppContent() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [pendingAction, setPendingAction] = useState<{ tab: string; action?: string } | null>(null);
   const [contentVersion, setContentVersion] = useState(0);
+  const [showAuth, setShowAuth] = useState(false);
 
   const handleNavigate = (tab: string, action?: string) => {
     setActiveTab(tab);
@@ -78,11 +80,15 @@ function AppContent() {
   }
 
   if (!profile) {
-    return (
-      <div className={resolvedTheme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}>
-        <Auth />
-      </div>
-    );
+    if (showAuth) {
+      return (
+        <div className={resolvedTheme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}>
+          <Auth onBack={() => setShowAuth(false)} />
+        </div>
+      );
+    }
+
+    return <LandingPage onAccess={() => setShowAuth(true)} />;
   }
 
   // Verificar si necesita onboarding (usuario nuevo sin datos físicos)

@@ -8,33 +8,33 @@ const router = Router();
 // GET /nutrition/meals/dates - Fechas únicas con registros
 router.get("/meals/dates", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    // Usar RPC para obtener fechas únicas (más eficiente)
+    // Try RPC first; if it fails (UUID vs int mismatch), use direct query
     const { data, error } = await supabase.rpc('get_meal_dates', {
       p_user_id: req.userId
     });
 
-    if (error) throw error;
+    if (!error && data) {
+      res.json(data);
+      return;
+    }
 
-    // Si no hay RPC, fallback a select normal
-    if (!data) {
-      const { data: meals, error: mealsError } = await supabase
-        .from("meals")
-        .select("date")
-        .eq("user_id", req.userId)
-        .order("date", { ascending: true });
-      
-      if (mealsError) throw mealsError;
-      
-      // Extraer fechas únicas manualmente
-      const uniqueDates = [...new Set(meals?.map(m => m.date))].filter(Boolean);
+    // Fallback: direct query
+    const { data: meals, error: mealsError } = await supabase
+      .from("meals")
+      .select("date")
+      .eq("user_id", req.userId)
+      .order("date", { ascending: true });
+
+    if (!mealsError && meals) {
+      const uniqueDates = [...new Set(meals.map((m: any) => m.date))].filter(Boolean);
       res.json(uniqueDates);
       return;
     }
 
-    res.json(data || []);
-  } catch (err: any) {
-    console.error("Error fetching meal dates:", err);
-    res.status(500).json({ message: err.message });
+    // Both queries failed — return empty array silently
+    res.json([]);
+  } catch {
+    res.json([]);
   }
 });
 

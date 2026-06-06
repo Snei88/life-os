@@ -13,7 +13,11 @@ import iconDark from "../../assets/icono_white.png";
 
 type AuthView = "login" | "register" | "forgot" | "reset-confirm";
 
-const Auth: React.FC = () => {
+type AuthProps = {
+  onBack?: () => void;
+};
+
+const Auth: React.FC<AuthProps> = ({ onBack }) => {
   const { login } = useAuth();
   const { resolvedTheme } = useTheme();
   const [view, setView] = useState<AuthView>("login");
@@ -149,6 +153,16 @@ const Auth: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 relative overflow-hidden">
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="absolute left-4 top-4 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-white/70 backdrop-blur-xl transition-all hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+        >
+          <ArrowLeft size={16} />
+          Volver
+        </button>
+      )}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-600/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />

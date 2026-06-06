@@ -69,7 +69,7 @@ html.light [class*="border-white"] {
 }
 
 /* Textos blancos → oscuros, EXCEPTO en elementos con fondo de color o en bloques que fuerzan blanco */
-html.light [class*="text-white"]:not([class*="bg-orange"]):not([class*="bg-green"]):not([class*="bg-blue"]):not([class*="bg-purple"]):not([class*="bg-red"]):not([class*="bg-gradient"]):not([class*="bg-[#"]):not(.nutrition-info):not(.nutrition-info *):not(.routine-info):not(.routine-info *) {
+html.light [class*="text-white"]:not([class*="bg-orange"]):not([class*="bg-green"]):not([class*="bg-blue"]):not([class*="bg-purple"]):not([class*="bg-red"]):not([class*="bg-gradient"]):not([class*="bg-[#"]):not(.nutrition-info):not(.nutrition-info *):not(.routine-info):not(.routine-info *):not(.landing-page *) {
   color: #111827 !important;
 }
 /* Texto en items activos del nav (fondo orange) debe seguir blanco */
