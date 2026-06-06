@@ -219,7 +219,7 @@ function PrimaryButton({
   large?: boolean;
 }) {
   const cls = cn(
-    "group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-[#ff6b35] font-bold text-white transition-all duration-300",
+    "group relative inline-flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full bg-[#ff6b35] font-bold text-white transition-all duration-300 sm:w-auto",
     "shadow-[0_0_0_1px_rgba(255,107,53,0.4),0_16px_40px_rgba(255,107,53,0.3)]",
     "hover:-translate-y-0.5 hover:shadow-[0_0_0_1px_rgba(255,107,53,0.5),0_24px_60px_rgba(255,107,53,0.45)]",
     "before:absolute before:inset-0 before:translate-x-[-110%] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:transition-transform before:duration-600 hover:before:translate-x-[110%]",
@@ -250,7 +250,7 @@ function GhostButton({
   large?: boolean;
 }) {
   const cls = cn(
-    "group inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 font-semibold text-white/75 backdrop-blur-sm transition-all duration-300",
+    "group inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 font-semibold text-white/75 backdrop-blur-sm transition-all duration-300 sm:w-auto",
     "hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/10 hover:text-white",
     large ? "min-h-14 px-8 py-4 text-sm" : "min-h-12 px-7 py-3 text-sm"
   );
@@ -469,6 +469,78 @@ function DashboardPreview() {
 
 // ─── MAIN ──────────────────────────────────────────────────────────────────────
 
+function MobileAppPreview() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 26, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.7, delay: 0.35, type: "spring", stiffness: 70 }}
+      className="relative mx-auto w-full max-w-[330px] md:hidden"
+    >
+      <div className="absolute -inset-5 rounded-[2.5rem] bg-[#ff6b35]/20 blur-3xl" />
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#f8f2ec] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.55)]">
+        <div className="rounded-[1.55rem] bg-[#120d0a] p-3">
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <img src={iconLight} alt="" className="h-7 w-auto rounded-lg bg-white/5 p-1" />
+              <div>
+                <p className="text-[11px] font-black text-white">Life OS</p>
+                <p className="text-[9px] font-semibold text-white/35">Hoy</p>
+              </div>
+            </div>
+            <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[9px] font-black text-emerald-300">
+              82%
+            </span>
+          </div>
+
+          <div className="rounded-2xl bg-white p-4 text-stone-950">
+            <p className="text-[10px] font-black uppercase text-stone-400">
+              Siguiente bloque
+            </p>
+            <div className="mt-3 flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#ff6b35] text-white">
+                <Dumbbell size={19} />
+              </span>
+              <div>
+                <p className="text-sm font-black">Gym Upper Body</p>
+                <p className="text-xs font-semibold text-stone-500">6:00 PM · 60 min</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {[
+              { label: "Sueño", value: "7.5h", icon: Moon, color: "text-indigo-300" },
+              { label: "Agua", value: "2.3L", icon: Droplets, color: "text-sky-300" },
+              { label: "Ahorro", value: "22%", icon: PiggyBank, color: "text-emerald-300" },
+            ].map((item) => (
+              <div key={item.label} className="rounded-2xl bg-white/[0.06] p-3">
+                <item.icon size={15} className={item.color} />
+                <p className="mt-2 text-[9px] font-bold uppercase text-white/35">{item.label}</p>
+                <p className="text-sm font-black text-white">{item.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-3 space-y-2">
+            {modules.slice(0, 3).map((mod) => (
+              <div key={mod.label} className="flex items-center justify-between rounded-2xl bg-white/[0.05] p-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ background: mod.iconBg }}>
+                    <mod.icon size={14} style={{ color: mod.iconColor }} />
+                  </span>
+                  <p className="text-xs font-black text-white">{mod.label}</p>
+                </div>
+                <p className="text-[10px] font-semibold text-white/35">{mod.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -509,7 +581,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
       >
         <nav
           className={cn(
-            "mx-auto flex max-w-7xl items-center justify-between rounded-2xl border px-5 py-3 transition-all duration-500",
+            "mx-auto flex max-w-7xl items-center justify-between rounded-[1.25rem] border px-3 py-2.5 transition-all duration-500 md:rounded-2xl md:px-5 md:py-3",
             scrolled
               ? "border-white/10 bg-[#0d0a08]/90 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-2xl"
               : "border-white/[0.06] bg-white/[0.04] backdrop-blur-xl"
@@ -541,13 +613,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
             </PrimaryButton>
           </div>
 
-          <button
+          <div className="flex items-center gap-2 md:hidden">
+            <a
+              href={DOWNLOAD_URL}
+              className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-[#ff6b35] px-3 text-[11px] font-black text-white shadow-[0_10px_26px_rgba(255,107,53,0.28)]"
+            >
+              <Download size={14} />
+              APK
+            </a>
+            <button
             onClick={() => setMobileOpen(true)}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5"
             aria-label="Abrir menú"
           >
             <Menu size={19} />
-          </button>
+            </button>
+          </div>
         </nav>
       </motion.header>
 
@@ -604,7 +685,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
 
       <main>
         {/* ─── HERO ──────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden px-4 pb-24 pt-36 sm:px-6 lg:pb-28 lg:pt-48">
+        <section className="relative overflow-hidden px-4 pb-16 pt-28 sm:px-6 md:pb-24 md:pt-36 lg:pb-28 lg:pt-48">
           {/* Background layers */}
           <div className="absolute inset-0">
             {/* Grid */}
@@ -625,13 +706,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
             <div className="absolute bottom-1/3 right-[8%] h-[250px] w-[250px] rounded-full bg-emerald-500/[0.07] blur-[80px]" />
           </div>
 
-          <div className="relative mx-auto max-w-7xl text-center">
+          <div className="relative mx-auto max-w-7xl text-left md:text-center">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 16, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="mb-9 inline-flex items-center gap-2.5 rounded-full border border-[#ff6b35]/25 bg-[#ff6b35]/10 px-5 py-2 text-[11px] font-bold uppercase tracking-widest text-[#ff8c5a]"
+              className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-[#ff6b35]/25 bg-[#ff6b35]/10 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-[#ff8c5a] md:mb-9 md:px-5 md:text-[11px]"
             >
               <span className="relative flex h-[7px] w-[7px]">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff6b35] opacity-75" />
@@ -645,7 +726,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.1, type: "spring", stiffness: 60 }}
-              className="mx-auto max-w-5xl text-balance text-[clamp(44px,8vw,92px)] font-black leading-[0.92] tracking-[-0.03em] text-white"
+              className="max-w-[12ch] text-balance text-[44px] font-black leading-[0.92] text-white sm:text-[56px] md:mx-auto md:max-w-5xl md:text-[clamp(44px,8vw,92px)]"
             >
               Organiza tu{" "}
               <GradientText>salud</GradientText>,{" "}
@@ -669,7 +750,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.25 }}
-              className="mx-auto mt-8 max-w-2xl text-pretty text-lg leading-8 text-white/45 sm:text-xl"
+              className="mt-6 max-w-[34rem] text-pretty text-base leading-7 text-white/52 sm:text-lg md:mx-auto md:mt-8 md:max-w-2xl md:text-xl md:leading-8 md:text-white/45"
             >
               Life OS une rutina semanal, nutrición, entrenamiento, finanzas, mindset y
               objetivos para ayudarte a decidir mejor cada día, sin vivir saltando entre apps.
@@ -680,7 +761,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+              className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row md:mt-10 md:items-center"
             >
               <PrimaryButton href={DOWNLOAD_URL} large>
                 <Download size={17} />
@@ -698,7 +779,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.55 }}
-              className="mt-7 flex flex-wrap items-center justify-center gap-6 text-[11px] font-semibold text-white/30"
+              className="mt-6 flex flex-wrap items-center gap-3 text-[11px] font-semibold text-white/35 md:mt-7 md:justify-center md:gap-6 md:text-white/30"
             >
               {["Gratis para empezar", "Sin tarjeta", "APK Android"].map((t) => (
                 <span key={t} className="flex items-center gap-1.5">
@@ -709,15 +790,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
             </motion.div>
 
             {/* Dashboard */}
-            <div className="mt-20">
-              <DashboardPreview />
+            <div className="mt-10 md:mt-20">
+              <MobileAppPreview />
+              <div className="hidden md:block">
+                <DashboardPreview />
+              </div>
             </div>
 
             {/* Scroll hint */}
             <motion.div
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              className="mt-16 flex flex-col items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/20"
+              className="mt-10 hidden flex-col items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white/20 md:flex lg:mt-16"
             >
               <ChevronDown size={20} />
               Explorar
@@ -726,20 +810,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
         </section>
 
         {/* ─── WHAT IS ───────────────────────────────────────────────────── */}
-        <section id="que-es" className="relative px-4 py-24 sm:px-6">
+        <section id="que-es" className="relative px-4 py-16 sm:px-6 md:py-24">
           {/* Divider line */}
-          <div className="mx-auto mb-24 max-w-7xl">
+          <div className="mx-auto mb-14 max-w-7xl md:mb-24">
             <div className="h-px bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
           </div>
 
-          <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1fr_1fr] lg:items-center">
+          <div className="mx-auto grid max-w-7xl gap-8 md:gap-16 lg:grid-cols-[1fr_1fr] lg:items-center">
             <div>
               <SectionLabel number="01" label="Qué es Life OS" />
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-balance text-4xl font-black leading-[1] tracking-tight text-white sm:text-5xl"
+                className="text-balance text-3xl font-black leading-[1.05] text-white sm:text-4xl md:text-5xl"
               >
                 Una capa de orden para las áreas que más{" "}
                 <GradientText>pesan</GradientText> en tu vida.
@@ -748,14 +832,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                className="mt-6 text-lg leading-8 text-white/45"
+                className="mt-5 text-base leading-7 text-white/50 md:mt-6 md:text-lg md:leading-8 md:text-white/45"
               >
                 Life OS no es solo un tracker. Es un tablero operativo personal: primero
                 entiende tus datos base, después crea estructura semanal y finalmente
                 conecta tus decisiones diarias con progreso visible.
               </motion.p>
 
-              <div className="mt-10 grid gap-3">
+              <div className="mt-8 flex snap-x gap-3 overflow-x-auto pb-2 md:mt-10 md:grid md:overflow-visible md:pb-0">
                 {benefits.map((benefit, i) => (
                   <motion.div
                     key={benefit.text}
@@ -763,7 +847,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08 }}
-                    className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4 transition-all hover:border-[#ff6b35]/20 hover:bg-white/[0.05]"
+                    className="group flex min-w-[82vw] snap-start items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4 transition-all hover:border-[#ff6b35]/20 hover:bg-white/[0.05] md:min-w-0"
                   >
                     <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 transition-transform group-hover:scale-110">
                       <benefit.icon size={18} />
@@ -774,7 +858,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-white/[0.07] bg-white/[0.03] p-5">
+            <div className="rounded-[1.5rem] border border-white/[0.07] bg-white/[0.03] p-3 md:rounded-[2rem] md:p-5">
               {[
                 { step: "Datos base", desc: "Peso, sueño, ingresos, gastos, objetivos.", icon: Activity },
                 { step: "Diagnóstico", desc: "Calorías, agua, fondo, salud financiera.", icon: BarChart3 },
@@ -814,18 +898,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
         </section>
 
         {/* ─── FEATURES ──────────────────────────────────────────────────── */}
-        <section id="funciones" className="relative px-4 py-24 sm:px-6">
+        <section id="funciones" className="relative px-4 py-16 sm:px-6 md:py-24">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(255,107,53,0.05),transparent)]" />
 
           <div className="relative mx-auto max-w-7xl">
             <SectionLabel number="02" label="Características principales" />
 
-            <div className="mb-14 flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+            <div className="mb-8 flex flex-col justify-between gap-5 md:mb-14 lg:flex-row lg:items-end">
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="max-w-3xl text-balance text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl"
+                className="max-w-3xl text-balance text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl"
               >
                 Todo lo importante,{" "}
                 <span className="text-white/30">conectado</span>{" "}
@@ -835,14 +919,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                className="max-w-sm text-base leading-7 text-white/40"
+                className="max-w-sm text-sm leading-7 text-white/48 md:text-base md:text-white/40"
               >
                 Cada módulo responde una pregunta concreta: qué hago hoy, por qué importa y
                 cómo mejora mi sistema.
               </motion.p>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="-mx-4 flex snap-x gap-4 overflow-x-auto px-4 pb-3 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-4">
               {features.map((feature, index) => (
                 <motion.article
                   key={feature.title}
@@ -851,7 +935,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                   viewport={{ once: true, margin: "-60px" }}
                   transition={{ duration: 0.5, delay: index * 0.08 }}
                   whileHover={{ y: -6 }}
-                  className="group relative overflow-hidden rounded-[1.5rem] border border-white/[0.07] bg-white/[0.03] p-7 transition-all hover:border-[#ff6b35]/20 hover:bg-white/[0.05]"
+                  className="group relative min-w-[82vw] snap-start overflow-hidden rounded-[1.5rem] border border-white/[0.07] bg-white/[0.03] p-6 transition-all hover:border-[#ff6b35]/20 hover:bg-white/[0.05] md:min-w-0 md:p-7"
                 >
                   {/* Top shimmer line */}
                   <div className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff6b35]/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -877,20 +961,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mt-6 grid grid-cols-3 overflow-hidden rounded-[1.5rem] border border-white/[0.07] bg-white/[0.02]"
+              className="mt-4 grid grid-cols-1 overflow-hidden rounded-[1.5rem] border border-white/[0.07] bg-white/[0.02] sm:grid-cols-3 md:mt-6"
             >
               {stats.map(({ value, label, icon: Icon }, i) => (
                 <div
                   key={label}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-2 p-8 text-center",
-                    i < stats.length - 1 && "border-r border-white/[0.06]"
+                    "flex flex-row items-center justify-between gap-3 p-5 text-left sm:flex-col sm:justify-center sm:p-8 sm:text-center",
+                    i < stats.length - 1 && "border-b border-white/[0.06] sm:border-b-0 sm:border-r"
                   )}
                 >
                   <Icon size={20} className="text-[#ff6b35]/60" />
                   <p className="text-3xl font-black text-white">
                     <AnimatedCounter value={value} />
-                    {value.includes("min") ? " min" : ""}
                   </p>
                   <p className="text-xs font-semibold text-white/30">{label}</p>
                 </div>
@@ -900,7 +983,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
         </section>
 
         {/* ─── BEFORE / AFTER ─────────────────────────────────────────────── */}
-        <section id="beneficios" className="px-4 py-24 sm:px-6">
+        <section id="beneficios" className="px-4 py-16 sm:px-6 md:py-24">
           <div className="mx-auto max-w-7xl">
             <SectionLabel number="03" label="Antes / Después" />
 
@@ -908,7 +991,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mb-12 text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl"
+              className="mb-8 text-3xl font-black leading-tight text-white sm:text-4xl md:mb-12 md:text-5xl"
             >
               De <span className="text-white/25">caos</span> a sistema.
             </motion.h2>
@@ -919,7 +1002,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="rounded-[2rem] border border-white/[0.06] bg-white/[0.02] p-8"
+                className="rounded-[1.5rem] border border-white/[0.06] bg-white/[0.02] p-5 md:rounded-[2rem] md:p-8"
               >
                 <div className="mb-7 flex items-center gap-3">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.06]">
@@ -954,7 +1037,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="relative overflow-hidden rounded-[2rem] border border-[#ff6b35]/20 bg-[#ff6b35]/[0.06] p-8"
+                className="relative overflow-hidden rounded-[1.5rem] border border-[#ff6b35]/20 bg-[#ff6b35]/[0.06] p-5 md:rounded-[2rem] md:p-8"
               >
                 <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#ff6b35]/10 blur-3xl" />
                 <div className="relative mb-7 flex items-center gap-3">
@@ -989,13 +1072,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
         </section>
 
         {/* ─── DEMO ───────────────────────────────────────────────────────── */}
-        <section id="demo" className="px-4 py-24 sm:px-6">
+        <section id="demo" className="px-4 py-16 sm:px-6 md:py-24">
           <div className="mx-auto max-w-7xl">
             <SectionLabel number="04" label="Demo interactiva" />
 
-            <div className="grid gap-10 overflow-hidden rounded-[2rem] border border-white/[0.07] bg-white/[0.02] p-5 lg:grid-cols-[1fr_0.85fr] lg:p-10">
-              <div className="overflow-hidden rounded-[1.5rem] bg-[#0a0705] p-5">
-                <DashboardPreview />
+            <div className="grid gap-8 overflow-hidden rounded-[1.5rem] border border-white/[0.07] bg-white/[0.02] p-4 md:rounded-[2rem] md:p-5 lg:grid-cols-[1fr_0.85fr] lg:gap-10 lg:p-10">
+              <div className="overflow-hidden rounded-[1.25rem] bg-[#0a0705] p-4 md:rounded-[1.5rem] md:p-5">
+                <MobileAppPreview />
+                <div className="hidden md:block">
+                  <DashboardPreview />
+                </div>
               </div>
 
               <div className="flex flex-col justify-center p-2 lg:p-4">
@@ -1016,7 +1102,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl"
+                  className="text-2xl font-black leading-tight text-white sm:text-3xl md:text-4xl"
                 >
                   Una semana que deja de ser una lista y se vuelve un{" "}
                   <GradientText>sistema</GradientText>.
@@ -1026,7 +1112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  className="mt-5 text-base leading-8 text-white/40"
+                  className="mt-4 text-sm leading-7 text-white/48 md:mt-5 md:text-base md:leading-8 md:text-white/40"
                 >
                   La demo visual muestra el flujo central: rutina base, métricas diarias y
                   módulos que alimentan tu avance semana a semana.
@@ -1064,8 +1150,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
         </section>
 
         {/* ─── CTA ────────────────────────────────────────────────────────── */}
-        <section className="px-4 pb-16 pt-8 sm:px-6">
-          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#ff6b35] via-orange-500 to-amber-500 p-10 sm:p-16 lg:p-20">
+        <section className="px-4 pb-10 pt-4 sm:px-6 md:pb-16 md:pt-8">
+          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-[#ff6b35] via-orange-500 to-amber-500 p-6 sm:p-10 md:rounded-[2.5rem] md:p-16 lg:p-20">
             {/* Grid overlay */}
             <div
               className="absolute inset-0 opacity-[0.07]"
@@ -1092,7 +1178,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="text-balance text-5xl font-black leading-[0.93] tracking-tight text-white sm:text-6xl lg:text-7xl"
+                  className="text-balance text-4xl font-black leading-[0.95] text-white sm:text-5xl md:text-6xl lg:text-7xl"
                 >
                   Descarga.<br />
                   Configura.<br />
@@ -1102,7 +1188,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  className="mt-6 max-w-md text-lg leading-8 text-white/70"
+                  className="mt-5 max-w-md text-base leading-7 text-white/75 md:mt-6 md:text-lg md:leading-8 md:text-white/70"
                 >
                   Life OS está diseñado para funcionar como tu centro personal: móvil para
                   capturar, web para revisar y ajustar.
@@ -1119,7 +1205,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="mt-10 flex flex-col gap-3 sm:flex-row"
+                  className="mt-8 flex flex-col gap-3 sm:flex-row md:mt-10"
                 >
                   <a
                     href={DOWNLOAD_URL}
@@ -1203,8 +1289,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAccess }) => {
         </section>
       </main>
 
+      <div className="fixed bottom-3 left-3 right-3 z-50 flex items-center gap-2 rounded-2xl border border-white/10 bg-[#120d0a]/92 p-2 shadow-[0_18px_60px_rgba(0,0,0,0.55)] backdrop-blur-2xl md:hidden">
+        <a
+          href={DOWNLOAD_URL}
+          className="inline-flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-[#ff6b35] px-4 text-sm font-black text-white"
+        >
+          <Download size={16} />
+          Descargar APK
+        </a>
+        <button
+          onClick={onAccess}
+          className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/10 px-4 text-sm font-black text-white/75"
+        >
+          Acceder
+        </button>
+      </div>
+
       {/* ─── FOOTER ──────────────────────────────────────────────────────── */}
-      <footer className="px-4 py-10 sm:px-6">
+      <footer className="px-4 pb-28 pt-10 sm:px-6 md:pb-10">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 border-t border-white/[0.06] pt-10 text-sm text-white/25 sm:flex-row">
           <div className="flex items-center gap-2.5">
             <img src={iconLight} alt="" className="h-5 w-auto opacity-30" />
