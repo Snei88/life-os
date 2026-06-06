@@ -48,7 +48,7 @@ type LandingPageProps = {
 };
 
 const DOWNLOAD_URL =
-  "https://www.mediafire.com/file/vrnayutsilmxu3t/LifeOS.apk/file";
+  "https://download1476.mediafire.com/zkogtzazx3lgMzuMNLIFES8obFJzXJuLO7OuO7IdAJ0qyC1LHlLWo0xAJ3ezto0kXFc7H7TBP0rJAblS5eXkmW4SkCNGY1FCm5ppp2LTuILaogE16nm53skGrYsLvzdEfQa4U6za9v0qboSfHvITEoCAVUGviY0yNjupuF_H8zPoWw/vrnayutsilmxu3t/LifeOS.apk
 
 // ─── DATA ──────────────────────────────────────────────────────────────────────
 
