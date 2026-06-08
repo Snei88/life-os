@@ -108,7 +108,7 @@ const buildProfilePatch = (profile: Record<string, unknown> = {}) =>
 router.get("/openapi.json", (_req, res) => {
   const baseUrl = publicBaseUrl();
   res.json({
-    openapi: "3.0.3",
+    openapi: "3.1.0",
     info: {
       title: "Life OS GPT Actions",
       version: "1.0.0",
