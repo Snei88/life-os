@@ -43,7 +43,7 @@ const txShape = (r: Record<string, unknown>) => ({
 router.get("/openapi.json", (_req, res) => {
   const baseUrl = publicBaseUrl();
   res.json({
-    openapi: "3.1.0",
+    openapi: "3.0.3",
     info: {
       title: "Life OS GPT Actions",
       version: "1.0.0",
@@ -141,7 +141,7 @@ router.get("/openapi.json", (_req, res) => {
           "x-openai-isConsequential": true,
           requestBody: {
             required: true,
-            content: { "application/json": { schema: { $ref: "#/components/schemas/GoalPatch" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/GoalInput" } } },
           },
           responses: { "200": { description: "Meta creada." } },
         },
@@ -154,7 +154,7 @@ router.get("/openapi.json", (_req, res) => {
           parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
           requestBody: {
             required: true,
-            content: { "application/json": { schema: { $ref: "#/components/schemas/GoalInput" } } },
+            content: { "application/json": { schema: { $ref: "#/components/schemas/GoalPatch" } } },
           },
           responses: { "200": { description: "Meta actualizada." } },
         },

@@ -26,6 +26,11 @@ https://life-os-production-74f1.up.railway.app/api/gpt/openapi.json
 3. En autenticacion, selecciona **API Key**.
 4. Tipo de autenticacion: **Bearer**.
 5. Pega el mismo valor de `LIFEOS_GPT_API_KEY`.
+6. Politica de privacidad:
+
+```text
+https://life-os-production-74f1.up.railway.app/privacy-policy
+```
 
 ## Instrucciones sugeridas para el GPT
 

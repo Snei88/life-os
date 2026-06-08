@@ -42,6 +42,26 @@ async function startServer() {
   app.use("/api/gpt", gptRouter);
 
   app.get("/api/health", (_req, res) => res.json({ status: "ok", db: "supabase" }));
+  app.get("/privacy-policy", (_req, res) => {
+    res.type("html").send(`<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Life OS - Politica de privacidad</title>
+  </head>
+  <body>
+    <main style="font-family: system-ui, sans-serif; max-width: 760px; margin: 40px auto; padding: 0 20px; line-height: 1.55;">
+      <h1>Life OS - Politica de privacidad</h1>
+      <p>Life OS usa la informacion que el usuario registra para mostrar y actualizar datos personales de bienestar, habitos, metas, nutricion, finanzas y diario dentro de la propia aplicacion.</p>
+      <p>La accion de ChatGPT se conecta al backend de Life OS solo para consultar o guardar datos solicitados por el usuario. No vende datos personales ni los comparte con terceros para publicidad.</p>
+      <p>ChatGPT puede enviar al endpoint de Life OS los parametros necesarios para ejecutar la accion seleccionada, como fechas, metas, habitos, transacciones o entradas de diario.</p>
+      <p>Para solicitar eliminacion o cambios de datos, usa las funciones disponibles dentro de Life OS o contacta al responsable de la aplicacion.</p>
+      <p>Ultima actualizacion: 2026-06-08.</p>
+    </main>
+  </body>
+</html>`);
+  });
 
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
