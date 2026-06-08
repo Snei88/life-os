@@ -46,12 +46,21 @@ No des diagnosticos medicos, financieros o legales definitivos. Da recomendacion
 
 ## Acciones disponibles
 
+- Configuracion integral de Life OS desde un plan confirmado por el usuario.
 - Leer resumen: perfil, metas, habitos, agua, nutricion y finanzas del mes.
 - Crear/listar/actualizar metas.
 - Crear/listar habitos y marcarlos como completados.
 - Listar y crear transacciones financieras.
 - Actualizar vasos de agua.
 - Guardar una entrada de diario.
+
+La accion principal para onboarding o redisenar el sistema de vida es:
+
+```text
+applyLifeSetup
+```
+
+Debe usarse solo despues de que el GPT haya presentado el plan completo y el usuario lo confirme. Puede actualizar perfil y crear metas, habitos, horario semanal, reglas de nutricion, rutinas de entrenamiento y mindset.
 
 ## Prueba rapida
 

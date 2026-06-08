@@ -40,6 +40,71 @@ const txShape = (r: Record<string, unknown>) => ({
   description: r.description || "",
 });
 
+const scheduleShape = (r: Record<string, unknown>) => ({
+  id: String(r.id),
+  dayOfWeek: r.day_of_week,
+  time: r.time,
+  endTime: r.end_time || "",
+  title: r.title,
+  type: r.type,
+  color: r.color,
+  isFixed: r.is_fixed,
+  description: r.description || "",
+});
+
+const routineShape = (r: Record<string, unknown>) => ({
+  id: String(r.id),
+  name: r.name,
+  type: r.type,
+  exercises: r.exercises || [],
+  isActive: r.is_active,
+});
+
+const profileFieldMap: Record<string, string> = {
+  name: "name",
+  age: "age",
+  birthDate: "birth_date",
+  gender: "gender",
+  weight: "weight",
+  height: "height",
+  bodyGoal: "body_goal",
+  activityLevel: "activity_level",
+  calorieTarget: "calorie_target",
+  waterTargetLiters: "water_target_liters",
+  monthlyIncome: "monthly_income",
+  monthlyExpenses: "monthly_expenses",
+  currentSavings: "current_savings",
+  debtType: "debt_type",
+  debtBalance: "debt_balance",
+  debtMonthlyPayment: "debt_monthly_payment",
+  financialGoal: "financial_goal",
+  financialGoalCost: "financial_goal_cost",
+  financialGoalMonthlySaving: "financial_goal_monthly_saving",
+  financialGoalHorizon: "financial_goal_horizon",
+  riskProfile: "risk_profile",
+  sleepBedtime: "sleep_bedtime",
+  sleepWakeTime: "sleep_wake_time",
+  workType: "work_type",
+  workStartTime: "work_start_time",
+  workEndTime: "work_end_time",
+  workDays: "work_days",
+  workoutTimePreference: "workout_time_preference",
+  dailyFreeTime: "daily_free_time",
+  gymTargetKcal: "gym_target_kcal",
+  restTargetKcal: "rest_target_kcal",
+  proteinTarget: "protein_target",
+  savingsGoal: "savings_goal",
+  emergencyFundGoal: "emergency_fund_goal",
+  mainGoal: "main_goal",
+};
+
+const buildProfilePatch = (profile: Record<string, unknown> = {}) =>
+  Object.fromEntries(
+    Object.entries(profile)
+      .filter(([key, value]) => profileFieldMap[key] && value !== undefined)
+      .map(([key, value]) => [profileFieldMap[key], value]),
+  );
+
 router.get("/openapi.json", (_req, res) => {
   const baseUrl = publicBaseUrl();
   res.json({
@@ -114,6 +179,108 @@ router.get("/openapi.json", (_req, res) => {
             description: { type: "string" },
           },
         },
+        ScheduleInput: {
+          type: "object",
+          required: ["dayOfWeek", "time", "title"],
+          properties: {
+            dayOfWeek: { type: "integer", minimum: 0, maximum: 6 },
+            time: { type: "string", example: "07:00" },
+            endTime: { type: "string", example: "08:00" },
+            title: { type: "string" },
+            type: { type: "string", example: "gym" },
+            color: { type: "string", example: "blue" },
+            isFixed: { type: "boolean" },
+            description: { type: "string" },
+          },
+        },
+        WorkoutRoutineInput: {
+          type: "object",
+          required: ["name"],
+          properties: {
+            name: { type: "string" },
+            type: { type: "string", example: "strength" },
+            exercises: {
+              type: "array",
+              items: {
+                type: "object",
+                required: ["name"],
+                properties: {
+                  name: { type: "string" },
+                  sets: { type: "integer", minimum: 1 },
+                  reps: { type: "integer", minimum: 1 },
+                  baseWeight: { type: "number", minimum: 0 },
+                  notes: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+        LifeProfileInput: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            age: { type: "integer" },
+            birthDate: { type: "string", format: "date" },
+            gender: { type: "string" },
+            weight: { type: "number" },
+            height: { type: "number" },
+            bodyGoal: { type: "string", enum: ["lose_fat", "recomp", "gain_muscle"] },
+            activityLevel: { type: "string", enum: ["sedentary", "moderate", "active", "very_active"] },
+            calorieTarget: { type: "integer" },
+            proteinTarget: { type: "integer" },
+            waterTargetLiters: { type: "number" },
+            monthlyIncome: { type: "number" },
+            monthlyExpenses: { type: "number" },
+            currentSavings: { type: "number" },
+            debtType: { type: "string" },
+            debtBalance: { type: "number" },
+            debtMonthlyPayment: { type: "number" },
+            financialGoal: { type: "string" },
+            financialGoalCost: { type: "number" },
+            financialGoalMonthlySaving: { type: "number" },
+            financialGoalHorizon: { type: "string" },
+            riskProfile: { type: "string" },
+            sleepBedtime: { type: "string", example: "22:30" },
+            sleepWakeTime: { type: "string", example: "06:30" },
+            workType: { type: "string" },
+            workStartTime: { type: "string", example: "08:00" },
+            workEndTime: { type: "string", example: "17:00" },
+            workDays: { type: "array", items: { type: "integer", minimum: 0, maximum: 6 } },
+            workoutTimePreference: { type: "string" },
+            dailyFreeTime: { type: "string" },
+            gymTargetKcal: { type: "integer" },
+            restTargetKcal: { type: "integer" },
+            savingsGoal: { type: "integer" },
+            emergencyFundGoal: { type: "number" },
+            mainGoal: { type: "string" },
+          },
+        },
+        LifeSetupInput: {
+          type: "object",
+          properties: {
+            sourceSummary: {
+              type: "string",
+              description: "Resumen breve de la informacion que ChatGPT uso para proponer esta configuracion.",
+            },
+            profile: { $ref: "#/components/schemas/LifeProfileInput" },
+            goals: { type: "array", items: { $ref: "#/components/schemas/GoalInput" } },
+            habits: { type: "array", items: { $ref: "#/components/schemas/HabitInput" } },
+            schedule: { type: "array", items: { $ref: "#/components/schemas/ScheduleInput" } },
+            nutritionRules: { type: "array", items: { type: "string" } },
+            workoutRoutines: { type: "array", items: { $ref: "#/components/schemas/WorkoutRoutineInput" } },
+            mindset: {
+              type: "object",
+              properties: {
+                date: { type: "string", format: "date" },
+                affirmation: { type: "string" },
+                journalText: { type: "string" },
+                gratitude: { type: "array", items: { type: "string" } },
+                reflection: { type: "string" },
+                brianTracyGoal: { type: "string" },
+              },
+            },
+          },
+        },
       },
     },
     security: [{ lifeOsApiKey: [] }],
@@ -127,6 +294,25 @@ router.get("/openapi.json", (_req, res) => {
             { name: "month", in: "query", schema: { type: "string", pattern: "^\\d{4}-\\d{2}$" } },
           ],
           responses: { "200": { description: "Resumen de perfil, metas, habitos, finanzas, nutricion y agua." } },
+        },
+      },
+      "/life-setup": {
+        post: {
+          operationId: "applyLifeSetup",
+          summary: "Guarda una configuracion inicial o redisenada de Life OS",
+          description:
+            "Usa esta accion despues de que el usuario confirme un plan integral basado en lo que ChatGPT conoce de el.",
+          "x-openai-isConsequential": true,
+          requestBody: {
+            required: true,
+            content: { "application/json": { schema: { $ref: "#/components/schemas/LifeSetupInput" } } },
+          },
+          responses: {
+            "200": {
+              description:
+                "Perfil actualizado y elementos creados: metas, habitos, horario, reglas de nutricion, rutinas y mindset.",
+            },
+          },
         },
       },
       "/goals": {
@@ -275,6 +461,234 @@ router.get("/openapi.json", (_req, res) => {
 });
 
 router.use(requireGptAuth);
+
+router.post("/life-setup", async (req: GptRequest, res: Response) => {
+  const {
+    sourceSummary = "",
+    profile = {},
+    goals = [],
+    habits = [],
+    schedule = [],
+    nutritionRules = [],
+    workoutRoutines = [],
+    mindset,
+  } = req.body;
+
+  const result: Record<string, unknown> = {
+    sourceSummary,
+    updatedProfile: null,
+    createdGoals: [],
+    createdHabits: [],
+    createdSchedule: [],
+    createdNutritionRules: [],
+    createdWorkoutRoutines: [],
+    savedMindset: null,
+  };
+
+  const profilePatch = buildProfilePatch(profile);
+  if (Object.keys(profilePatch).length > 0) {
+    const { data, error } = await supabase
+      .from("users")
+      .update(profilePatch)
+      .eq("id", req.userId)
+      .select("id, name, main_goal, body_goal, activity_level, calorie_target, protein_target, water_target_liters")
+      .single();
+    if (error) {
+      res.status(500).json({ message: error.message, step: "profile" });
+      return;
+    }
+    result.updatedProfile = {
+      id: String(data.id),
+      name: data.name,
+      mainGoal: data.main_goal || "",
+      bodyGoal: data.body_goal,
+      activityLevel: data.activity_level,
+      calorieTarget: data.calorie_target,
+      proteinTarget: data.protein_target,
+      waterTargetLiters: data.water_target_liters,
+    };
+  }
+
+  if (Array.isArray(goals) && goals.length > 0) {
+    const rows = goals
+      .filter((goal: any) => goal?.title && goal?.level)
+      .map((goal: any) => ({
+        user_id: req.userId,
+        title: goal.title,
+        description: goal.description || "",
+        deadline: goal.deadline || null,
+        level: goal.level,
+        progress: goal.progress ?? 0,
+        category: goal.category || "Personal",
+        priority: goal.priority || "Media",
+      }));
+    if (rows.length > 0) {
+      const { data, error } = await supabase.from("goals").insert(rows).select();
+      if (error) {
+        res.status(500).json({ message: error.message, step: "goals" });
+        return;
+      }
+      result.createdGoals = (data || []).map(goalShape);
+    }
+  }
+
+  if (Array.isArray(habits) && habits.length > 0) {
+    const rows = habits
+      .filter((habit: any) => habit?.name)
+      .map((habit: any) => ({
+        user_id: req.userId,
+        name: habit.name,
+        icon: habit.icon || "circle",
+        color: habit.color || "orange",
+        frequency: habit.frequency || { type: "daily" },
+        category: habit.category || "otros",
+        target_streak: habit.targetStreak || 21,
+        target_days: habit.frequency?.type === "weekly" ? habit.frequency.days : [0, 1, 2, 3, 4, 5, 6],
+      }));
+    if (rows.length > 0) {
+      const { data, error } = await supabase.from("habits").insert(rows).select();
+      if (error) {
+        res.status(500).json({ message: error.message, step: "habits" });
+        return;
+      }
+      result.createdHabits = (data || []).map(habitShape);
+    }
+  }
+
+  if (Array.isArray(schedule) && schedule.length > 0) {
+    const rows = schedule
+      .filter((event: any) => event?.title && event?.time && event?.dayOfWeek !== undefined)
+      .map((event: any) => ({
+        user_id: req.userId,
+        day_of_week: Number(event.dayOfWeek),
+        time: event.time,
+        end_time: event.endTime || null,
+        title: event.title,
+        type: event.type || "vida",
+        color: event.color || "blue",
+        is_fixed: event.isFixed ?? true,
+        description: event.description || "",
+      }));
+    if (rows.length > 0) {
+      const { data, error } = await supabase.from("schedule_events").insert(rows).select();
+      if (error) {
+        res.status(500).json({ message: error.message, step: "schedule" });
+        return;
+      }
+      result.createdSchedule = (data || []).map(scheduleShape);
+    }
+  }
+
+  if (Array.isArray(nutritionRules) && nutritionRules.length > 0) {
+    const { data: existing } = await supabase
+      .from("nutrition_rules")
+      .select("sort_order")
+      .eq("user_id", req.userId)
+      .order("sort_order", { ascending: false })
+      .limit(1);
+    const startOrder = (existing?.[0]?.sort_order ?? -1) + 1;
+    const rows = nutritionRules
+      .filter((rule: unknown) => typeof rule === "string" && rule.trim())
+      .map((rule: string, index: number) => ({
+        user_id: req.userId,
+        rule: rule.trim(),
+        sort_order: startOrder + index,
+      }));
+    if (rows.length > 0) {
+      const { data, error } = await supabase.from("nutrition_rules").insert(rows).select();
+      if (error) {
+        res.status(500).json({ message: error.message, step: "nutritionRules" });
+        return;
+      }
+      result.createdNutritionRules = data || [];
+    }
+  }
+
+  if (Array.isArray(workoutRoutines) && workoutRoutines.length > 0) {
+    const rows = workoutRoutines
+      .filter((routine: any) => routine?.name)
+      .map((routine: any) => ({
+        user_id: req.userId,
+        name: routine.name,
+        type: routine.type || "strength",
+        exercises: routine.exercises || [],
+      }));
+    if (rows.length > 0) {
+      const { data, error } = await supabase.from("workout_routines").insert(rows).select();
+      if (error) {
+        res.status(500).json({ message: error.message, step: "workoutRoutines" });
+        return;
+      }
+      result.createdWorkoutRoutines = (data || []).map(routineShape);
+    }
+  }
+
+  if (mindset && typeof mindset === "object") {
+    const date = mindset.date || today();
+    const { data, error } = await supabase
+      .from("journal_entries")
+      .upsert(
+        {
+          user_id: req.userId,
+          date,
+          affirmation: mindset.affirmation || "",
+          journal_text: mindset.journalText || "",
+          gratitude: Array.isArray(mindset.gratitude) ? mindset.gratitude : [],
+          reflection: mindset.reflection || "",
+        },
+        { onConflict: "user_id,date" },
+      )
+      .select()
+      .single();
+    if (error) {
+      res.status(500).json({ message: error.message, step: "mindsetJournal" });
+      return;
+    }
+
+    let brianTracy = null;
+    if (mindset.brianTracyGoal) {
+      const { data: tracyData, error: tracyError } = await supabase
+        .from("brian_tracy_logs")
+        .upsert(
+          { user_id: req.userId, date, goal: mindset.brianTracyGoal, completed: false },
+          { onConflict: "user_id,date" },
+        )
+        .select()
+        .single();
+      if (tracyError) {
+        res.status(500).json({ message: tracyError.message, step: "brianTracy" });
+        return;
+      }
+      brianTracy = { id: String(tracyData.id), date: String(tracyData.date), goal: tracyData.goal };
+    }
+
+    result.savedMindset = {
+      journal: {
+        id: String(data.id),
+        date: String(data.date),
+        affirmation: data.affirmation,
+        journalText: data.journal_text,
+        gratitude: data.gratitude,
+        reflection: data.reflection,
+      },
+      brianTracy,
+    };
+  }
+
+  res.json({
+    ok: true,
+    counts: {
+      goals: (result.createdGoals as unknown[]).length,
+      habits: (result.createdHabits as unknown[]).length,
+      schedule: (result.createdSchedule as unknown[]).length,
+      nutritionRules: (result.createdNutritionRules as unknown[]).length,
+      workoutRoutines: (result.createdWorkoutRoutines as unknown[]).length,
+      mindset: result.savedMindset ? 1 : 0,
+      profile: result.updatedProfile ? 1 : 0,
+    },
+    result,
+  });
+});
 
 router.get("/summary", async (req: GptRequest, res: Response) => {
   const date = String(req.query.date || today());
