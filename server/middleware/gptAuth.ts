@@ -34,7 +34,15 @@ export function requireGptAuth(req: GptRequest, res: Response, next: NextFunctio
     return;
   }
 
-  if (readApiKey(req) !== expectedKey) {
+  const providedKey = readApiKey(req);
+  if (!providedKey) {
+    res.status(401).json({
+      message: "Missing GPT API key. Configure the GPT Action authentication as API Key with Bearer auth.",
+    });
+    return;
+  }
+
+  if (providedKey !== expectedKey) {
     res.status(401).json({ message: "Invalid GPT API key" });
     return;
   }

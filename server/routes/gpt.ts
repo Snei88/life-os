@@ -118,9 +118,10 @@ router.get("/openapi.json", (_req, res) => {
     components: {
       securitySchemes: {
         lifeOsApiKey: {
-          type: "http",
-          scheme: "bearer",
-          description: "API key configurada como Bearer token en el GPT Action.",
+          type: "apiKey",
+          in: "header",
+          name: "Authorization",
+          description: "Enviar el valor como Bearer <LIFEOS_GPT_API_KEY>.",
         },
       },
       schemas: {
