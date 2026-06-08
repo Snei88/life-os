@@ -4,16 +4,27 @@ export interface GptRequest extends Request {
   userId?: number;
 }
 
+function normalizeApiKey(value: unknown) {
+  return String(value || "")
+    .trim()
+    .replace(/^["']|["']$/g, "")
+    .trim();
+}
+
 function readApiKey(req: Request) {
   const authorization = req.headers.authorization || "";
   if (authorization.toLowerCase().startsWith("bearer ")) {
-    return authorization.slice("bearer ".length).trim();
+    return normalizeApiKey(authorization.slice("bearer ".length));
   }
-  return String(req.headers["x-gpt-api-key"] || "").trim();
+  return (
+    normalizeApiKey(authorization) ||
+    normalizeApiKey(req.headers["x-gpt-api-key"]) ||
+    normalizeApiKey(req.headers["x-api-key"])
+  );
 }
 
 export function requireGptAuth(req: GptRequest, res: Response, next: NextFunction) {
-  const expectedKey = process.env.LIFEOS_GPT_API_KEY;
+  const expectedKey = normalizeApiKey(process.env.LIFEOS_GPT_API_KEY);
   const userId = Number(process.env.LIFEOS_GPT_USER_ID);
 
   if (!expectedKey || !Number.isInteger(userId)) {
