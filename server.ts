@@ -17,6 +17,7 @@ import waterRouter from "./server/routes/water.js";
 import nutritionRulesRouter from "./server/routes/nutritionRules.js";
 import nutritionRouter from "./server/routes/nutrition.js";
 import gptRouter from "./server/routes/gpt.js";
+import versionRouter from "./server/routes/version.js";
 
 async function startServer() {
   await setupUser();
@@ -40,6 +41,7 @@ async function startServer() {
   app.use("/api/nutrition-rules", nutritionRulesRouter);
   app.use("/api/nutrition", nutritionRouter);
   app.use("/api/gpt", gptRouter);
+  app.use("/api/version", versionRouter);
 
   app.get("/api/health", (_req, res) => res.json({ status: "ok", db: "supabase" }));
   app.get("/privacy-policy", (_req, res) => {
