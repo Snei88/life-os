@@ -10,6 +10,7 @@ import workoutsRoutes from "./server/routes/workouts.js";
 import financeRoutes from "./server/routes/finance.js";
 import goalsRoutes from "./server/routes/goals.js";
 import mindsetRoutes from "./server/routes/mindset.js";
+import mindGamesRouter from "./server/routes/mindGames.js";
 import scheduleRoutes from "./server/routes/schedule.js";
 import usersRoutes from "./server/routes/users.js";
 import foodItemsRouter from "./server/routes/foodItems.js";
@@ -35,6 +36,7 @@ async function startServer() {
   app.use("/api/finance", financeRoutes);
   app.use("/api/goals", goalsRoutes);
   app.use("/api/mindset", mindsetRoutes);
+  app.use("/api/mind-games", mindGamesRouter);
   app.use("/api/schedule", scheduleRoutes);
   app.use("/api/users", usersRoutes);
   app.use("/api/food-items", foodItemsRouter);
