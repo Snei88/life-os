@@ -16,6 +16,7 @@ import foodItemsRouter from "./server/routes/foodItems.js";
 import waterRouter from "./server/routes/water.js";
 import nutritionRulesRouter from "./server/routes/nutritionRules.js";
 import nutritionRouter from "./server/routes/nutrition.js";
+import runningRouter from "./server/routes/running.js";
 import gptRouter from "./server/routes/gpt.js";
 import versionRouter from "./server/routes/version.js";
 
@@ -40,6 +41,7 @@ async function startServer() {
   app.use("/api/water", waterRouter);
   app.use("/api/nutrition-rules", nutritionRulesRouter);
   app.use("/api/nutrition", nutritionRouter);
+  app.use("/api/running", runningRouter);
   app.use("/api/gpt", gptRouter);
   app.use("/api/version", versionRouter);
 
